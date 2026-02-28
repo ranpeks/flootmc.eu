@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlootMC</title>
+  <link rel="icon" href="https://i.imgur.com/WM6NQHV.png" type="image/png">
+<link rel="shortcut icon" href="https://i.imgur.com/WM6NQHV.png" type="image/png">
+<link rel="apple-touch-icon" href="https://i.imgur.com/WM6NQHV.png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            overflow-y: scroll;
+            margin: 0;
+            background: linear-gradient(135deg, #8707ff, #0717ff);
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .hero {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .hero-content {
+            max-width: 500px;
+            z-index: 1;
+        }
+        .hero-image img {
+            max-width: 300px;
+            z-index: 1;
+        }
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        header {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            z-index: 10;
+            background-color: transparent; /* Make sure header background is transparent */
+        }
+        nav {
+            background-color: transparent; /* Ensure nav is transparent */
+        }
+        header nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            background: transparent; /* Ensure ul background is transparent */
+        }
+        header nav ul li {
+            margin: 0 15px;
+        }
+        header nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="loader">
+        <div class="spinner"></div>
+    </div>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Strona główna</a></li>
+                <li><a href="sklep.html">Sklep</a></li>
+                <li><a href="regulamin.html">Regulamin</a></li>
+                <li><a href="inne.html">Inne</a></li>
+            </ul>
+        </nav>
+        <div class="navbar-bar"></div>
+    </header>
+    <main>
+        <section class="hero">
+            <div class="hero-image">
+                <img src="https://i.imgur.com/WM6NQHV.png" alt="Przykładowy obrazek" class="floating">
+            </div>
+            <div class="hero-content">
+                <h1>FlootMC</h1>
+                <p>Najlepsze klocki w Polsce</p>
+                <div class="hero-buttons">
+                    <button class="copy-ip" onclick="copyIP()">Skopiuj IP</button>
+                    <button class="shop">Sklep</button>
+                </div>
+            </div>
+            <canvas class="particles"></canvas>
+            <div class="scroll-down">
+                <a href="#administration"><img src="images/arrow.png" alt="Zjedź na dół"></a>
+            </div>
+        </section>
+        <section id="administration" class="administration">
+            <h2 class="section-title">Administracja</h2>
+            <div class="admin owner">
+                <img src="https://imgur.com/R0nYnke.png" alt="Avatar">
+                <h3>Własciciel</h3>
+                <p>OG_Ranpeks</p>
+            </div>
+            <div class="admin ceo">
+                <img src="https://imgur.com/1RcBbng.png" alt="Avatar">
+                <h3>Ceo</h3>
+                <p>Betez68</p>
+            </div>
+            <div class="admin admin">
+                <img src="https://imgur.com/d24q67z.png" alt="Avatar">
+                <h3>Administrator</h3>
+                <p>x_Bartek_x</p>
+            </div>
+        </section>
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="https://i.imgur.com/WM6NQHV.png" alt="Logo">
+            </div>
+            <div class="footer-menu">
+                <h4>MENU</h4>
+                <ul>
+                    <li><a href="index.html">Strona główna</a></li>
+                    <li><a href="sklep.html">Sklep</a></li>
+                    <li><a href="ranking.html">Ranking</a></li>
+                    <li><a href="administracja.html">Administracja</a></li>
+                </ul>
+            </div>
+            <div class="footer-info">
+                <h4>INFORMACJE</h4>
+                <ul>
+                    <li><a href="#">Regulamin</a></li>
+                    <li><a href="#">Kontakt</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>WAŻNE</h4>
+                <ul>
+                    <li><a href="https://www.youtube.com/channel/UCynqhZzlURPSIovzN6-qKrw"><i class="fab fa-facebook"></i> Facebook</a></li>
+                    <li><a href="https://www.youtube.com/channel/UCynqhZzlURPSIovzN6-qKrw"><i class="fab fa-youtube"></i> YouTube</a></li>
+                    <li><a href="https://dc.flootmc.eu"><i class="fab fa-discord"></i> Discord</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>2026 - FlootMC | Wszelkie prawa zastrzeżone.</p>
+            <p>Design by: Ranpeks | FlootMC</p>
+        </div>
+    </footer>
+    <div class="notification" id="notification">SKOPIOWANO</div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelector(".loader").style.display = "none";
+            initParticles();
+        });
+
+        function copyIP() {
+            const ip = 'flootmc.eu';
+            navigator.clipboard.writeText(ip).then(function() {
+                showNotification();
+            }, function() {
+                alert('Nie udało się skopiować IP');
+            });
+        }
+
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        function initParticles() {
+            const canvas = document.querySelector('.particles');
+            const ctx = canvas.getContext('2d');
+            const particles = [];
+            const colors = ['#ffffff', '#bbbbbb', '#888888'];
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            function Particle(x, y, radius) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.velocity = {
+                    x: (Math.random() - 0.5) * 0.5,
+                    y: (Math.random() - 0.5) * 0.5
+                };
+            }
+
+            Particle.prototype.draw = function() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.closePath();
+            }
+
+            Particle.prototype.update = function() {
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+
+                if (this.x < 0 || this.x > canvas.width) this.velocity.x = -this.velocity.x;
+                if (this.y < 0 || this.y > canvas.height) this.velocity.y = -this.velocity.y;
+
+                this.draw();
+            }
+
+            function init() {
+                particles.length = 0;
+                for (let i = 0; i < 100; i++) {
+                    const radius = Math.random() * 2;
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height;
+                    particles.push(new Particle(x, y, radius));
+                }
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                particles.forEach(particle => particle.update());
+            }
+
+            init();
+            animate();
+        }
+
+        window.addEventListener('resize', () => {
+            const canvas = document.querySelector('.particles');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initParticles();
+        });
+    </script>
+</body>
+</html>
