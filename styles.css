@@ -426,15 +426,15 @@ nav ul li a:focus-visible {
 }
 
 .admin.owner {
-    border-color: rgb(246, 206, 58);
+    border-color: rgba(246, 206, 58, 0.72);
 }
 
 .admin.ceo {
-    border-color: rgba(204, 17, 255, 0.48);
+    border-color: rgba(255, 34, 64, 0.68);
 }
 
 .admin.admin {
-    border-color: rgb(246, 206, 58);
+    border-color: rgba(255, 88, 88, 0.48);
 }
 
 .admin.mod {
