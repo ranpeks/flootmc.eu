@@ -434,7 +434,7 @@ nav ul li a:focus-visible {
 }
 
 .admin.admin {
-    border-color: rgba(250, 128, 114, 0.52);
+    border-color: rgb(246, 206, 58);
 }
 
 .admin.mod {
