@@ -426,7 +426,7 @@ nav ul li a:focus-visible {
 }
 
 .admin.owner {
-    border-color: rgba(255, 72, 72, 0.48);
+    border-color: rgb(246, 206, 58);
 }
 
 .admin.ceo {
