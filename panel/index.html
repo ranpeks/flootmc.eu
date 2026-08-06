@@ -38,7 +38,7 @@
             message.textContent = error ? 'Nie udało się zmienić hasła.' : 'Hasło zostało zmienione.';
             if (!error) form.reset();
         });
-        document.querySelector('#logout').addEventListener('click', async () => { await signOut(); window.location.assign('index.html'); });
+        document.querySelector('#logout').addEventListener('click', async () => { await signOut(); window.location.assign('/'); });
     </script>
 </body>
 </html>

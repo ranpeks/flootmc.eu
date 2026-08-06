@@ -22,7 +22,7 @@
     </main>
     <script type="module">
         import { signIn, getCurrentAdmin } from '../auth.js';
-        if (await getCurrentAdmin()) window.location.replace('panel.html');
+        if (await getCurrentAdmin()) window.location.replace('/panel/');
         const form = document.querySelector('#login-form');
         const message = document.querySelector('#login-message');
         form.addEventListener('submit', async (event) => {
@@ -31,7 +31,7 @@
             const { nick, password } = Object.fromEntries(new FormData(form));
             const { error } = await signIn(nick, password);
             if (error) { message.textContent = 'Nie udało się zalogować. Sprawdź nick i token.'; return; }
-            window.location.assign('panel.html');
+            window.location.assign('/panel/');
         });
     </script>
 </body>
