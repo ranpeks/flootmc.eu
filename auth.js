@@ -38,6 +38,10 @@ export async function requireAdmin() {
     return admin;
 }
 
+supabase.auth.onAuthStateChange((event) => {
+    if (event === 'PASSWORD_RECOVERY') window.location.replace('/panel/');
+});
+
 async function renderAccountButton() {
     const admin = await getCurrentAdmin();
     if (!admin || document.querySelector('.account-menu')) return;
