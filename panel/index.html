@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#090712">
     <title>Panel administracji — FlootMC</title>
-    <link rel="stylesheet" href="styles.css?v=20260806">
+    <link rel="stylesheet" href="../styles.css?v=20260806">
 </head>
 <body>
     <main class="auth-page">
@@ -25,7 +25,7 @@
         </section>
     </main>
     <script type="module">
-        import { requireAdmin, changePassword, signOut } from './auth.js';
+        import { requireAdmin, changePassword, signOut } from '../auth.js';
         const admin = await requireAdmin();
         if (admin) document.querySelector('#panel-profile').innerHTML = `<img src="https://mc-heads.net/avatar/${encodeURIComponent(admin.skin)}/160" alt="Skin ${admin.label}"><div><strong>${admin.label}</strong><span>Administrator FlootMC</span></div>`;
         const form = document.querySelector('#password-form');

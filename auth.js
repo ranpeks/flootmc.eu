@@ -34,7 +34,7 @@ export async function getCurrentAdmin() {
 
 export async function requireAdmin() {
     const admin = await getCurrentAdmin();
-    if (!admin) window.location.replace('logowanie.html');
+    if (!admin) window.location.replace('/logowanie/');
     return admin;
 }
 
@@ -50,7 +50,7 @@ async function renderAccountButton() {
         </button>
         <div class="account-dropdown" hidden>
             <strong>${admin.label}</strong>
-            <a href="panel.html">Mój profil</a>
+            <a href="/panel/">Mój profil</a>
             <button type="button" class="account-logout">Wyloguj</button>
         </div>`;
     document.body.append(menu);
@@ -64,7 +64,7 @@ async function renderAccountButton() {
     });
     menu.querySelector('.account-logout').addEventListener('click', async () => {
         await signOut();
-        window.location.assign('index.html');
+        window.location.assign('/');
     });
 }
 

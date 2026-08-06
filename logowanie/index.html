@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#090712">
     <title>Logowanie administracji — FlootMC</title>
-    <link rel="stylesheet" href="styles.css?v=20260806">
+    <link rel="stylesheet" href="../styles.css?v=20260806">
 </head>
 <body>
     <main class="auth-page">
@@ -17,11 +17,11 @@
             <label>Token / hasło<input name="password" type="password" autocomplete="current-password" required></label>
             <p class="auth-message" id="login-message" aria-live="polite"></p>
             <button class="auth-submit" type="submit">Zaloguj się</button>
-            <a class="auth-back" href="./">Wróć na stronę główną</a>
+            <a class="auth-back" href="../">Wróć na stronę główną</a>
         </form>
     </main>
     <script type="module">
-        import { signIn, getCurrentAdmin } from './auth.js';
+        import { signIn, getCurrentAdmin } from '../auth.js';
         if (await getCurrentAdmin()) window.location.replace('panel.html');
         const form = document.querySelector('#login-form');
         const message = document.querySelector('#login-message');
