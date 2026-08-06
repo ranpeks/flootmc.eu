@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#090712">
+    <title>Logowanie administracji — FlootMC</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="auth-page">
+        <form class="auth-card" id="login-form">
+            <img src="https://i.imgur.com/WM6NQHV.png" alt="FlootMC" class="auth-logo">
+            <h1>Panel administracji</h1>
+            <p>Zaloguj się swoim nickiem administracyjnym i tokenem.</p>
+            <label>Nick administratora<input name="nick" autocomplete="username" required placeholder="np. og_ranpeks"></label>
+            <label>Token / hasło<input name="password" type="password" autocomplete="current-password" required></label>
+            <p class="auth-message" id="login-message" aria-live="polite"></p>
+            <button class="auth-submit" type="submit">Zaloguj się</button>
+            <a class="auth-back" href="index.html">Wróć na stronę główną</a>
+        </form>
+    </main>
+    <script type="module">
+        import { signIn, getCurrentAdmin } from './auth.js';
+        if (await getCurrentAdmin()) window.location.replace('panel.html');
+        const form = document.querySelector('#login-form');
+        const message = document.querySelector('#login-message');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            message.textContent = 'Logowanie…';
+            const { nick, password } = Object.fromEntries(new FormData(form));
+            const { error } = await signIn(nick, password);
+            if (error) { message.textContent = 'Nie udało się zalogować. Sprawdź nick i token.'; return; }
+            window.location.assign('panel.html');
+        });
+    </script>
+</body>
+</html>
