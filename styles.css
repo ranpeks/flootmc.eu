@@ -759,6 +759,13 @@ footer {
     color: #f2b7ff;
 }
 
+.rules-section strong {
+    color: #fff;
+    font-size: 1.03em;
+    font-weight: 900;
+    letter-spacing: 0.01em;
+}
+
 .rules-contact {
     display: flex;
     flex-wrap: wrap;
