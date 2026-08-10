@@ -748,6 +748,17 @@ footer {
     color: var(--pink);
 }
 
+.rules-section li a {
+    color: #fff;
+    text-decoration-color: rgba(204, 17, 255, 0.72);
+    text-underline-offset: 3px;
+}
+
+.rules-section li a:hover,
+.rules-section li a:focus-visible {
+    color: #f2b7ff;
+}
+
 .rules-contact {
     display: flex;
     flex-wrap: wrap;
