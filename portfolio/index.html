@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranpeks | Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+    <!-- LOADER -->
+    <div id="loader">
+        <div class="loader-content">
+            <div class="loader-logo">Ranpeks</div>
+            <div class="loader-bar"><div class="loader-progress"></div></div>
+            <div class="loader-text">Ładowanie...</div>
+        </div>
+    </div>
+
+    <!-- PARTICLES BACKGROUND -->
+    <canvas id="particles"></canvas>
+
+    <!-- NAVIGATION -->
+    <nav id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="nav-logo">
+                <span class="logo-bracket">&lt;</span>
+                <span class="logo-text">Ranpeks</span>
+                <span class="logo-slash"> /</span>
+                <span class="logo-bracket">&gt;</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link active">Start</a></li>
+                <li><a href="#about" class="nav-link">O mnie</a></li>
+                <li><a href="#skills" class="nav-link">Umiejętności</a></li>
+                <li><a href="#projects" class="nav-link">Projekty</a></li>
+                <li><a href="#services" class="nav-link">Usługi</a></li>
+                <li><a href="#contact" class="nav-link">Kontakt</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="#contact" class="nav-cta">Napisz do mnie</a>
+                <button class="mobile-toggle" id="mobileToggle">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobileMenu">
+        <ul class="mobile-links">
+            <li><a href="#home">Start</a></li>
+            <li><a href="#about">O mnie</a></li>
+            <li><a href="#skills">Umiejętności</a></li>
+            <li><a href="#projects">Projekty</a></li>
+            <li><a href="#services">Usługi</a></li>
+            <li><a href="#contact">Kontakt</a></li>
+        </ul>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                Dostępny do współpracy
+            </div>
+            <h1 class="hero-title">
+                <span class="hero-greeting">Cześć, jestem</span>
+                <span class="hero-name">Ranpeks<span class="cursor">_</span></span>
+                <span class="hero-role">
+                    <span id="typewriter"></span>
+                </span>
+            </h1>
+            <p class="hero-description">
+                Tworzę <span class="highlight">pluginy Minecraft</span>, 
+                <span class="highlight">boty Discord</span>, 
+                <span class="highlight">strony internetowe</span> oraz 
+                <span class="highlight">autorskie rozwiązania</span> dla serwerów i społeczności.
+            </p>
+            <div class="hero-buttons">
+                <a href="#projects" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i> Moje projekty
+                </a>
+                <a href="#contact" class="btn btn-secondary">
+                    <i class="fas fa-envelope"></i> Kontakt
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number" data-target="5">0</span>+
+                    <span class="stat-label">Projektów</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" data-target="100">0</span>+
+                    <span class="stat-label">Pobrań</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" data-target="2">0</span>+
+                    <span class="stat-label">Lat doświadczenia</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="code-window">
+                <div class="code-header">
+                    <div class="code-dots">
+                        <span class="dot red"></span>
+                        <span class="dot yellow"></span>
+                        <span class="dot green"></span>
+                    </div>
+                    <span class="code-title">RanpeksDev.java</span>
+                </div>
+                <pre class="code-body"><code><span class="keyword">public class</span> <span class="class-name">Ranpeks</span> {
+
+    <span class="keyword">private</span> String <span class="variable">name</span> = <span class="string">"Ranpeks"</span>;
+    <span class="keyword">private</span> String <span class="variable">role</span> = <span class="string">"Code Developer"</span>;
+
+    <span class="keyword">public</span> List&lt;String&gt; <span class="method">getSkills</span>() {
+        <span class="keyword">return</span> Arrays.asList(
+            <span class="string">"Java"</span>,
+            <span class="string">"Spigot/Paper API"</span>,
+            <span class="string">"Discord Bots"</span>,
+            <span class="string">"Web Development"</span>,
+            <span class="string">"AntiCheat Systems"</span>
+        );
+    }
+
+    <span class="keyword">public boolean</span> <span class="method">isAvailable</span>() {
+        <span class="keyword">return</span> <span class="boolean">true</span>;
+    }
+}</code></pre>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="mouse">
+                <div class="wheel"></div>
+            </div>
+            <span>Scrolluj w dół</span>
+        </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section id="about" class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">&lt;o-mnie&gt;</span>
+                <h2 class="section-title">Kim jestem?</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="about-grid">
+                <div class="about-image">
+                    <div class="about-avatar">
+                        <div class="avatar-ring"></div>
+                        <div class="avatar-inner">
+                            <i class="fas fa-code"></i>
+                        </div>
+                    </div>
+                    <div class="about-decorations">
+                        <div class="float-badge badge-1"><i class="fab fa-java"></i></div>
+                        <div class="float-badge badge-2"><i class="fab fa-discord"></i></div>
+                        <div class="float-badge badge-3"><i class="fab fa-html5"></i></div>
+                        <div class="float-badge badge-4"><i class="fas fa-gamepad"></i></div>
+                    </div>
+                </div>
+                <div class="about-content">
+                    <h3 class="about-subtitle">
+                        Pasjonat programowania & <span class="gradient-text">Minecraft Developer</span>
+                    </h3>
+                    <p class="about-text">
+                        Jestem <strong>Ranpeks</strong> — niezależnym developerem specjalizującym się w tworzeniu 
+                        <strong>pluginów Minecraft</strong> (Spigot/Paper), <strong>botów Discord</strong> oraz 
+                        <strong>stron internetowych</strong>. Tworzę autorskie rozwiązania dopasowane do potrzeb 
+                        serwerów i społeczności gamingowych.
+                    </p>
+                    <p class="about-text">
+                        Moje projekty wyróżniają się <strong>jakością kodu</strong>, <strong>optymalizacją</strong> 
+                        i <strong>dbałością o detale</strong>. Każdy plugin, bot czy strona jest tworzona z myślą 
+                        o użytkowniku końcowym i najlepszej możliwej wydajności.
+                    </p>
+                    <div class="about-info-grid">
+                        <div class="info-item">
+                            <i class="fas fa-user"></i>
+                            <div>
+                                <span class="info-label">Nick</span>
+                                <span class="info-value">Ranpeks</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-briefcase"></i>
+                            <div>
+                                <span class="info-label">Specjalizacja</span>
+                                <span class="info-value">Plugin Developer</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <span class="info-label">Lokalizacja</span>
+                                <span class="info-value">Polska</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <span class="info-label">Status</span>
+                                <span class="info-value available">Dostępny</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="section-header" style="margin-top:0;">
+                <span class="section-tag">&lt;/o-mnie&gt;</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SKILLS SECTION -->
+    <section id="skills" class="section section-dark">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">&lt;umiejętności&gt;</span>
+                <h2 class="section-title">Moje umiejętności</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="skills-grid">
+                <div class="skill-card" data-aos="fade-up" data-delay="0">
+                    <div class="skill-icon"><i class="fab fa-java"></i></div>
+                    <h3>Java</h3>
+                    <p>Główny język do tworzenia pluginów Minecraft</p>
+                    <div class="skill-bar"><div class="skill-fill" data-width="90%"></div></div>
+                </div>
+                <div class="skill-card" data-aos="fade-up" data-delay="100">
+                    <div class="skill-icon"><i class="fas fa-cube"></i></div>
+                    <h3>Spigot / Paper API</h3>
+                    <p>Tworzenie zaawansowanych pluginów serwerowych</p>
+                    <div class="skill-bar"><div class="skill-fill" data-width="85%"></div></div>
+                </div>
+                <div class="skill-card" data-aos="fade-up" data-delay="200">
+                    <div class="skill-icon"><i class="fab fa-discord"></i></div>
+                    <h3>Discord Boty</h3>
+                    <p>Boty moderacyjne, muzyczne i niestandardowe</p>
+                    <div class="skill-bar"><div class="skill-fill" data-width="80%"></div></div>
+                </div>
+                <div class="skill-card" data-aos="fade-up" data-delay="300">
+                    <div class="skill-icon"><i class="fab fa-html5"></i></div>
+                    <h3>HTML / CSS / JS</h3>
+                    <p>Responsywne strony internetowe i portfolio</p>
+                    <div class="skill-bar"><div class="skill-fill" data-width="75%"></div></div>
+                </div>
+                <div class="skill-card" data-aos="fade-up" data-delay="400">
+                    <div class="skill-icon"><i class="fab fa-php"></i></div>
+                    <h3>PHP</h3>
+                    <p>Backend, systemy kontaktu, panele admina</p>
+                    <div class="skill-bar"><div class="skill-fill" data-width="70%"></div></div>
+                </div>
+                <div class="skill-card" data-aos="fade-up" data-delay="500">
+                    <div class="skill-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>AntiCheat</h3>
+                    <p>Systemy wykrywania cheaterów w Minecraft</p>
+                    <div class="skill-bar"><div class="skill-fill" data-width="85%"></div></div>
+                </div>
+                <div class="skill-card" data-aos="fade-up" data-delay="600">
+                    <div class="skill-icon"><i class="fas fa-database"></i></div>
+                    <h3>MySQL / SQLite</h3>
+                    <p>Bazy danych dla pluginów i aplikacji</p>
+                    <div class="skill-bar"><div class="skill-fill" data-width="75%"></div></div>
+                </div>
+                <div class="skill-card" data-aos="fade-up" data-delay="700">
+                    <div class="skill-icon"><i class="fab fa-git-alt"></i></div>
+                    <h3>Git</h3>
+                    <p>Kontrola wersji i zarządzanie projektami</p>
+                    <div class="skill-bar"><div class="skill-fill" data-width="70%"></div></div>
+                </div>
+            </div>
+            <div class="section-header" style="margin-top:0;">
+                <span class="section-tag">&lt;/umiejętności&gt;</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROJECTS SECTION -->
+    <section id="projects" class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">&lt;projekty&gt;</span>
+                <h2 class="section-title">Moje projekty</h2>
+                <div class="section-line"></div>
+            </div>
+
+            <!-- FEATURED PROJECT -->
+            <div class="featured-project">
+                <div class="featured-badge">
+                    <i class="fas fa-star"></i> Wyróżniony projekt
+                </div>
+                <div class="featured-grid">
+                    <div class="featured-info">
+                        <div class="project-status status-released">
+                            <span class="status-dot"></span> Wydany
+                        </div>
+                        <h3 class="featured-title">
+                            <i class="fas fa-shield-alt"></i> Ranpeks AntiCheat
+                        </h3>
+                        <p class="featured-version">Wersja 1.0 | Minecraft 1.8 - 1.21+</p>
+                        <p class="featured-description">
+                            Zaawansowany system AntiCheat dla serwerów Minecraft. Plugin wykrywa i blokuje 
+                            najnowsze cheaty, hacki i exploity. Zapewnia uczciwe środowisko gry dla wszystkich 
+                            graczy. System zawiera inteligentne algorytmy detekcji, automatyczne kary, 
+                            szczegółowe logi i łatwą konfigurację.
+                        </p>
+                        <div class="featured-features">
+                            <div class="feature-tag"><i class="fas fa-check"></i> Detekcja KillAura</div>
+                            <div class="feature-tag"><i class="fas fa-check"></i> Anti-Fly</div>
+                            <div class="feature-tag"><i class="fas fa-check"></i> Anti-Speed</div>
+                            <div class="feature-tag"><i class="fas fa-check"></i> Anti-Reach</div>
+                            <div class="feature-tag"><i class="fas fa-check"></i> Auto-Ban</div>
+                            <div class="feature-tag"><i class="fas fa-check"></i> Logi naruszeń</div>
+                            <div class="feature-tag"><i class="fas fa-check"></i> Pełna konfiguracja</div>
+                            <div class="feature-tag"><i class="fas fa-check"></i> Lekki i szybki</div>
+                        </div>
+                        <div class="featured-tech">
+                            <span class="tech-badge">Java</span>
+                            <span class="tech-badge">Spigot API</span>
+                            <span class="tech-badge">Paper</span>
+                            <span class="tech-badge">NMS</span>
+                        </div>
+                        <div class="featured-actions">
+                            <a href="https://www.spigotmc.org/resources/pajg-anticheat-1-0.137432/" 
+                               target="_blank" class="btn btn-primary">
+                                <i class="fas fa-download"></i> Pobierz na SpigotMC
+                            </a>
+                            <a href="https://www.spigotmc.org/resources/pajg-anticheat-1-0.137432/" 
+                               target="_blank" class="btn btn-outline">
+                                <i class="fas fa-external-link-alt"></i> Szczegóły
+                            </a>
+                        </div>
+                    </div>
+                    <div class="featured-visual">
+                        <div class="project-preview">
+                            <div class="preview-header">
+                                <div class="preview-dots">
+                                    <span class="dot red"></span>
+                                    <span class="dot yellow"></span>
+                                    <span class="dot green"></span>
+                                </div>
+                                <span>Ranpeks AntiCheat</span>
+                            </div>
+                            <div class="preview-body">
+                                <div class="console-line">
+                                    <span class="console-prefix">[RANPEKS-AC]</span>
+                                    <span class="console-info">AntiCheat załadowany pomyślnie!</span>
+                                </div>
+                                <div class="console-line">
+                                    <span class="console-prefix">[RANPEKS-AC]</span>
+                                    <span class="console-info">Załadowano 12 modułów detekcji</span>
+                                </div>
+                                <div class="console-line">
+                                    <span class="console-prefix">[RANPEKS-AC]</span>
+                                    <span class="console-warn">Wykryto: Player123 → KillAura (VL: 15)</span>
+                                </div>
+                                <div class="console-line">
+                                    <span class="console-prefix">[RANPEKS-AC]</span>
+                                    <span class="console-error">BANNED: Player123 → Cheating</span>
+                                </div>
+                                <div class="console-line">
+                                    <span class="console-prefix">[RANPEKS-AC]</span>
+                                    <span class="console-success">Serwer chroniony ✓</span>
+                                </div>
+                                <div class="console-line typing">
+                                    <span class="console-prefix">&gt;</span>
+                                    <span class="console-cursor">_</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- COMING SOON PROJECTS -->
+            <h3 class="subsection-title">
+                <i class="fas fa-clock"></i> Nadchodzące projekty
+            </h3>
+            <div class="projects-grid">
+                <div class="project-card coming-soon">
+                    <div class="project-status status-dev">
+                        <span class="status-dot"></span> W budowie
+                    </div>
+                    <div class="project-icon"><i class="fas fa-robot"></i></div>
+                    <h4>Ranpeks Bot</h4>
+                    <p>Zaawansowany bot Discord z systemem moderacji, muzyki, ticketów i wiele więcej.</p>
+                    <div class="project-tech">
+                        <span>Discord.js</span>
+                        <span>Node.js</span>
+                    </div>
+                    <div class="coming-soon-badge">
+                        <i class="fas fa-hourglass-half"></i> Wkrótce
+                    </div>
+                </div>
+                <div class="project-card coming-soon">
+                    <div class="project-status status-dev">
+                        <span class="status-dot"></span> W budowie
+                    </div>
+                    <div class="project-icon"><i class="fas fa-dungeon"></i></div>
+                    <h4>Ranpeks Core</h4>
+                    <p>Plugin core do zarządzania serwerem Minecraft — rangi, ekonomia, teleportacja i więcej.</p>
+                    <div class="project-tech">
+                        <span>Java</span>
+                        <span>Spigot</span>
+                        <span>MySQL</span>
+                    </div>
+                    <div class="coming-soon-badge">
+                        <i class="fas fa-hourglass-half"></i> Wkrótce
+                    </div>
+                </div>
+                <div class="project-card coming-soon">
+                    <div class="project-status status-dev">
+                        <span class="status-dot"></span> W budowie
+                    </div>
+                    <div class="project-icon"><i class="fas fa-globe"></i></div>
+                    <h4>Ranpeks Web</h4>
+                    <p>Gotowe szablony stron dla serwerów Minecraft — nowoczesne, responsywne, szybkie.</p>
+                    <div class="project-tech">
+                        <span>HTML</span>
+                        <span>CSS</span>
+                        <span>JS</span>
+                        <span>PHP</span>
+                    </div>
+                    <div class="coming-soon-badge">
+                        <i class="fas fa-hourglass-half"></i> Wkrótce
+                    </div>
+                </div>
+            </div>
+            <div class="section-header" style="margin-top:0;">
+                <span class="section-tag">&lt;/projekty&gt;</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES SECTION -->
+    <section id="services" class="section section-dark">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">&lt;usługi&gt;</span>
+                <h2 class="section-title">Co oferuję?</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-puzzle-piece"></i></div>
+                    <h3>Pluginy Minecraft</h3>
+                    <p>Tworzę autorskie pluginy na zamówienie — od prostych komend po zaawansowane systemy gry.</p>
+                    <ul class="service-list">
+                        <li><i class="fas fa-check"></i> Pluginy Spigot / Paper</li>
+                        <li><i class="fas fa-check"></i> Systemy AntiCheat</li>
+                        <li><i class="fas fa-check"></i> Minigry i eventy</li>
+                        <li><i class="fas fa-check"></i> Integracja z bazami danych</li>
+                    </ul>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fab fa-discord"></i></div>
+                    <h3>Boty Discord</h3>
+                    <p>Niestandardowe boty Discord dopasowane do potrzeb Twojego serwera.</p>
+                    <ul class="service-list">
+                        <li><i class="fas fa-check"></i> Systemy moderacji</li>
+                        <li><i class="fas fa-check"></i> Systemy ticketów</li>
+                        <li><i class="fas fa-check"></i> Systemy leveli</li>
+                        <li><i class="fas fa-check"></i> Komendy slash</li>
+                    </ul>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon"><i class="fas fa-laptop-code"></i></div>
+                    <h3>Strony internetowe</h3>
+                    <p>Nowoczesne, responsywne strony dla serwerów, społeczności i projektów.</p>
+                    <ul class="service-list">
+                        <li><i class="fas fa-check"></i> Strony serwerów MC</li>
+                        <li><i class="fas fa-check"></i> Portfolio i landing page</li>
+                        <li><i class="fas fa-check"></i> Panele administracyjne</li>
+                        <li><i class="fas fa-check"></i> Formularze kontaktowe</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="section-header" style="margin-top:0;">
+                <span class="section-tag">&lt;/usługi&gt;</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section id="contact" class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">&lt;kontakt&gt;</span>
+                <h2 class="section-title">Skontaktuj się</h2>
+                <div class="section-line"></div>
+                <p class="section-subtitle">
+                    Masz pytanie, chcesz zamówić projekt lub po prostu pogadać? Napisz do mnie!
+                </p>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <div class="contact-card">
+                        <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                        <div>
+                            <h4>Email</h4>
+                            <p><a href="mailto:kontakt@flootmc.eu">kontakt@flootmc.eu</a></p>
+                        </div>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon"><i class="fab fa-discord"></i></div>
+                        <div>
+                            <h4>Discord</h4>
+                            <p>og_ranpeks</p>
+                        </div>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon"><i class="fas fa-clock"></i></div>
+                        <div>
+                            <h4>Czas odpowiedzi</h4>
+                            <p>Do 24 godzin</p>
+                        </div>
+                    </div>
+                    <div class="response-info">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Po wysłaniu wiadomości otrzymasz automatyczne potwierdzenie na podany adres email. 
+                           Administrator odpowie w ciągu <strong>24 godzin</strong>.</p>
+                    </div>
+                </div>
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <label for="name"><i class="fas fa-user"></i> Imię / Nick</label>
+                        <input type="text" id="name" name="name" placeholder="Twoje imię lub nick" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="email" name="email" placeholder="twoj@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject"><i class="fas fa-tag"></i> Temat</label>
+                        <select id="subject" name="subject" required>
+                            <option value="">Wybierz temat...</option>
+                            <option value="plugin">Zamówienie pluginu</option>
+                            <option value="bot">Zamówienie bota Discord</option>
+                            <option value="website">Zamówienie strony</option>
+                            <option value="anticheat">Pytanie o AntiCheat</option>
+                            <option value="cooperation">Współpraca</option>
+                            <option value="other">Inne</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message"><i class="fas fa-comment"></i> Wiadomość</label>
+                        <textarea id="message" name="message" rows="5" 
+                                  placeholder="Opisz czego potrzebujesz..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> Wyślij wiadomość
+                    </button>
+                    <div class="form-status" id="formStatus"></div>
+                </form>
+            </div>
+            <div class="section-header" style="margin-top:0;">
+                <span class="section-tag">&lt;/kontakt&gt;</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="footer-logo">
+                        <span class="logo-bracket">&lt;</span>Ranpeks<span class="logo-slash"> /</span><span class="logo-bracket">&gt;</span>
+                    </span>
+                    <p>Developer | Pluginy Minecraft | Boty Discord | Strony WWW</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">Start</a>
+                    <a href="#about">O mnie</a>
+                    <a href="#projects">Projekty</a>
+                    <a href="#contact">Kontakt</a>
+                </div>
+                <div class="footer-social">
+                    <a href="https://www.spigotmc.org/resources/pajg-anticheat-1-0.137432/" target="_blank" title="SpigotMC">
+                        <i class="fas fa-cube"></i>
+                    </a>
+                    <a href="#" title="Discord"><i class="fab fa-discord"></i></a>
+                    <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Ranpeks. Wszelkie prawa zastrzeżone.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCROLL TO TOP -->
+    <button class="scroll-top" id="scrollTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="main.js"></script>
+</body>
+</html>
