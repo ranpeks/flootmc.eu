@@ -223,6 +223,19 @@ img {
     position: relative;
 }
 
+.nav-flootmc {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.nav-flootmc img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
 .nav-link:hover,
 .nav-link.active {
     color: var(--text-light);
