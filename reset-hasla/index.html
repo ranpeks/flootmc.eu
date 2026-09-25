@@ -33,7 +33,9 @@
     <script type="module">
         import { sendPasswordReset, changePassword, signOut } from '../auth.js';
 
-        const recoveryMode = new URLSearchParams(window.location.search).get('recovery') === '1';
+        const queryParams = new URLSearchParams(window.location.search);
+        const hashParams = new URLSearchParams(window.location.hash.slice(1));
+        const recoveryMode = queryParams.get('recovery') === '1' || hashParams.get('type') === 'recovery';
         const requestForm = document.querySelector('#request-form');
         const recoveryForm = document.querySelector('#recovery-form');
         const description = document.querySelector('#reset-description');
@@ -45,6 +47,16 @@
             backLink.href = '/reset-hasla/';
             backLink.textContent = 'Poproś o nowy link resetujący';
             recoveryForm.querySelector('input[name="password"]').focus();
+        }
+
+        const recoveryError = hashParams.get('error_description') || queryParams.get('error_description');
+        if (recoveryError) {
+            requestForm.hidden = true;
+            recoveryForm.hidden = false;
+            description.textContent = 'Link resetujący wygasł albo jest nieprawidłowy. Poproś o nowy link i otwórz go ponownie.';
+            document.querySelector('#recovery-message').textContent = recoveryError.replaceAll('+', ' ');
+            backLink.href = '/reset-hasla/';
+            backLink.textContent = 'Poproś o nowy link resetujący';
         }
 
         requestForm.addEventListener('submit', async (event) => {
@@ -67,9 +79,14 @@
             }
 
             message.textContent = 'Zapisywanie nowego hasła…';
-            const { error } = await changePassword(password);
+            let error;
+            try {
+                ({ error } = await changePassword(password));
+            } catch (requestError) {
+                error = requestError;
+            }
             if (error) {
-                message.textContent = 'Link resetujący wygasł lub jest nieprawidłowy. Wyślij nowy link i spróbuj ponownie.';
+                message.textContent = error.message || 'Nie udało się zapisać hasła. Spróbuj ponownie.';
                 return;
             }
 
