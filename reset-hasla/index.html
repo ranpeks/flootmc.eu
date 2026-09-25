@@ -9,27 +9,72 @@
 </head>
 <body>
     <main class="auth-page">
-        <form class="auth-card" id="reset-form">
+        <section class="auth-card" aria-labelledby="reset-title">
             <img src="https://i.imgur.com/WM6NQHV.png" alt="FlootMC" class="auth-logo">
-            <h1>Reset hasła</h1>
-            <p>Podaj swój nick administracyjny. Wyślemy link do ustawienia nowego hasła na przypisany adres email.</p>
-            <label>Nick administratora<input name="nick" autocomplete="username" required placeholder="np. og_ranpeks"></label>
-            <p class="auth-message" id="reset-message" aria-live="polite"></p>
-            <button class="auth-submit" type="submit">Wyślij link resetujący</button>
-            <a class="auth-back" href="/logowanie/">Wróć do logowania</a>
-        </form>
+            <h1 id="reset-title">Reset hasła</h1>
+            <p id="reset-description">Podaj swój nick administracyjny. Wyślemy link do ustawienia nowego hasła na przypisany adres email.</p>
+
+            <form id="request-form">
+                <label>Nick administratora<input name="nick" autocomplete="username" required placeholder="np. og_ranpeks"></label>
+                <p class="auth-message" id="request-message" aria-live="polite"></p>
+                <button class="auth-submit" type="submit">Wyślij link resetujący</button>
+            </form>
+
+            <form id="recovery-form" hidden>
+                <label>Nowe hasło<input name="password" type="password" autocomplete="new-password" minlength="12" required></label>
+                <label>Powtórz nowe hasło<input name="confirmPassword" type="password" autocomplete="new-password" minlength="12" required></label>
+                <p class="auth-message" id="recovery-message" aria-live="polite"></p>
+                <button class="auth-submit" type="submit">Zapisz nowe hasło</button>
+            </form>
+
+            <a class="auth-back" id="reset-back" href="/logowanie/">Wróć do logowania</a>
+        </section>
     </main>
     <script type="module">
-        import { sendPasswordReset } from '../auth.js';
-        const form = document.querySelector('#reset-form');
-        const message = document.querySelector('#reset-message');
-        form.addEventListener('submit', async (event) => {
+        import { sendPasswordReset, changePassword, signOut } from '../auth.js';
+
+        const recoveryMode = new URLSearchParams(window.location.search).get('recovery') === '1';
+        const requestForm = document.querySelector('#request-form');
+        const recoveryForm = document.querySelector('#recovery-form');
+        const description = document.querySelector('#reset-description');
+        const backLink = document.querySelector('#reset-back');
+        if (recoveryMode) {
+            requestForm.hidden = true;
+            recoveryForm.hidden = false;
+            description.textContent = 'Wpisz i potwierdź nowe hasło do konta. Po zapisaniu zaloguj się ponownie.';
+            backLink.href = '/reset-hasla/';
+            backLink.textContent = 'Poproś o nowy link resetujący';
+            recoveryForm.querySelector('input[name="password"]').focus();
+        }
+
+        requestForm.addEventListener('submit', async (event) => {
             event.preventDefault();
+            const message = document.querySelector('#request-message');
             message.textContent = 'Wysyłanie…';
-            const { error } = await sendPasswordReset(new FormData(form).get('nick'));
+            const { error } = await sendPasswordReset(new FormData(requestForm).get('nick'));
             message.textContent = error
                 ? 'Nie udało się wysłać wiadomości. Sprawdź nick administratora i spróbuj ponownie.'
                 : 'Jeśli konto istnieje, wiadomość z linkiem resetującym została wysłana.';
+        });
+
+        recoveryForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const message = document.querySelector('#recovery-message');
+            const { password, confirmPassword } = Object.fromEntries(new FormData(recoveryForm));
+            if (password !== confirmPassword) {
+                message.textContent = 'Podane hasła nie są identyczne.';
+                return;
+            }
+
+            message.textContent = 'Zapisywanie nowego hasła…';
+            const { error } = await changePassword(password);
+            if (error) {
+                message.textContent = 'Link resetujący wygasł lub jest nieprawidłowy. Wyślij nowy link i spróbuj ponownie.';
+                return;
+            }
+
+            await signOut();
+            window.location.replace('/logowanie/?password-reset=success');
         });
     </script>
 </body>

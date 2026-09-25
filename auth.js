@@ -27,8 +27,10 @@ export async function changePassword(password) {
 export async function sendPasswordReset(nick) {
     const admin = admins[nick.trim().toLowerCase()];
     if (!admin) return { error: { message: 'Nieprawidłowy nick administratora.' } };
+    const recoveryUrl = new URL('/reset-hasla/', window.location.origin);
+    recoveryUrl.searchParams.set('recovery', '1');
     return supabase.auth.resetPasswordForEmail(admin.email, {
-        redirectTo: `${window.location.origin}/panel/?recovery=1`
+        redirectTo: recoveryUrl.toString()
     });
 }
 
@@ -57,8 +59,8 @@ export async function requireAdmin() {
 }
 
 supabase.auth.onAuthStateChange((event) => {
-    if (event === 'PASSWORD_RECOVERY' && !window.location.pathname.startsWith('/panel/')) {
-        window.location.replace('/panel/?recovery=1');
+    if (event === 'PASSWORD_RECOVERY' && !window.location.pathname.startsWith('/reset-hasla/')) {
+        window.location.replace('/reset-hasla/?recovery=1');
     }
 });
 
