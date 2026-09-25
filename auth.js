@@ -6,6 +6,7 @@ const supabase = createClient(
 );
 
 const admins = {
+    admin: { email: 'admin@flootmc.eu', skin: 'admin', label: 'admin' },
     og_ranpeks: { email: 'og_ranpeks@flootmc.eu', skin: 'OG_Ranpeks', label: 'OG_Ranpeks' },
     betez_x: { email: 'betezx@flootmc.eu', skin: 'Betez68', label: 'Betez_x' },
     x_bartek_x: { email: 'x_bartek_x@flootmc.eu', skin: 'x_Bartek_x', label: 'x_Bartek_x' }
