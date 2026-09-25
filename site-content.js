@@ -17,6 +17,32 @@ try {
             element.textContent = content[key];
         }
     }
+    let editorDocument = content.site_editor_document ?? {};
+    if (typeof editorDocument === 'string') {
+        try { editorDocument = JSON.parse(editorDocument); }
+        catch { editorDocument = {}; }
+    }
+    const pagePath = (window.location.pathname.replace(/index\.html$/, '') || '/').replace(/\/?$/, '/');
+    const pageEdits = editorDocument?.[pagePath] ?? {};
+    const isSafeUrl = (value, image = false) => {
+        if (typeof value !== 'string' || !value.trim()) return false;
+        try {
+            const url = new URL(value.trim(), window.location.href);
+            return image ? ['https:', 'http:'].includes(url.protocol) : ['https:', 'http:', 'mailto:', 'tel:'].includes(url.protocol);
+        } catch { return false; }
+    };
+    for (const [path, edit] of Object.entries(pageEdits)) {
+        const indices = path.split('.').map(Number);
+        let node = document.body;
+        for (const index of indices) node = node?.childNodes[index];
+        if (!(node instanceof Element)) continue;
+        if (typeof edit.text === 'string' && node.childElementCount === 0) node.textContent = edit.text;
+        if (typeof edit.href === 'string' && isSafeUrl(edit.href)) {
+            if (node.matches('a')) node.setAttribute('href', edit.href);
+            else if (node.hasAttribute('data-shop-url')) node.dataset.shopUrl = edit.href;
+        }
+        if (typeof edit.src === 'string' && node.matches('img') && isSafeUrl(edit.src, true)) node.setAttribute('src', edit.src);
+    }
     window.siteContent = content;
 } catch (error) {
     console.error('FlootMC site content could not be loaded:', error);

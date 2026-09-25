@@ -5,7 +5,7 @@ const allowedKeys = new Set([
   'admin_2_name', 'admin_2_role', 'admin_2_skin',
   'admin_3_name', 'admin_3_role', 'admin_3_skin',
   'discord_url', 'facebook_url', 'footer_year', 'hero_image_url',
-  'hero_subtitle', 'hero_title', 'logo_url', 'server_ip', 'shop_url', 'youtube_url'
+  'hero_subtitle', 'hero_title', 'logo_url', 'server_ip', 'shop_url', 'site_editor_document', 'youtube_url'
 ]);
 
 const previous = JSON.parse(await readFile('site-content.json', 'utf8'));
