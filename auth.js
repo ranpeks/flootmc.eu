@@ -1,9 +1,12 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
+const SUPABASE_URL = 'https://sawxgllonwjjbmuaddyd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_PETx6WMwU5PGKzKZKQJwgw_P5WUw_i4';
+
 const initialRecoveryHash = window.location.hash;
 const supabase = createClient(
-    'https://sawxgllonwjjbmuaddyd.supabase.co',
-    'sb_publishable_PETx6WMwU5PGKzKZKQJwgw_P5WUw_i4'
+    SUPABASE_URL,
+    SUPABASE_KEY
 );
 
 const admins = {
@@ -26,13 +29,42 @@ export async function changePassword(password) {
 }
 
 export async function sendPasswordReset(nick) {
-    const admin = admins[nick.trim().toLowerCase()];
-    if (!admin) return { error: { message: 'Nieprawidłowy nick administratora.' } };
     const recoveryUrl = new URL('/reset-hasla/', window.location.origin);
     recoveryUrl.searchParams.set('recovery', '1');
-    return supabase.auth.resetPasswordForEmail(admin.email, {
-        redirectTo: recoveryUrl.toString()
-    });
+    try {
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/admin-user-management`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', apikey: SUPABASE_KEY },
+            body: JSON.stringify({ action: 'request-reset', nick, redirectTo: recoveryUrl.toString() })
+        });
+        if (!response.ok) return { error: { message: 'Nie udało się wysłać wiadomości.' } };
+        const data = await response.json().catch(() => ({}));
+        return data.sent === false
+            ? { data, error: { message: 'Nie udało się wysłać wiadomości. Spróbuj ponownie za chwilę.' } }
+            : { data, error: null };
+    } catch (error) {
+        return { error };
+    }
+}
+
+export async function manageUsers(action, user = {}) {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session?.access_token) return { error: sessionError ?? new Error('Zaloguj się ponownie.') };
+    try {
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/admin-user-management`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                apikey: SUPABASE_KEY,
+                Authorization: `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ action, ...user })
+        });
+        const result = await response.json().catch(() => ({}));
+        return response.ok ? { data: result, error: null } : { error: new Error(result.error || 'Nie udało się wykonać operacji.') };
+    } catch (error) {
+        return { error };
+    }
 }
 
 export async function getSiteContent() {
@@ -89,7 +121,7 @@ async function renderAccountButton() {
         </button>
         <div class="account-dropdown" hidden>
             <strong>${admin.label}</strong>
-            <a href="/panel/">Mój profil</a>
+            <a href="/panel/">Panel</a>
             <button type="button" class="account-logout">Wyloguj</button>
         </div>`;
     document.body.append(menu);

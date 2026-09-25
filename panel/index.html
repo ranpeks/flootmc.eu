@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#090712">
     <title>Panel administratora — FlootMC</title>
     <link rel="stylesheet" href="../styles.css?v=20260806">
-    <link rel="stylesheet" href="../panel.css?v=63cca3e">
+    <link rel="stylesheet" href="../panel.css?v=users1">
 </head>
 <body class="admin-console">
     <header class="admin-topbar">
@@ -35,14 +35,19 @@
                     <span class="admin-tile-copy"><strong>Zaktualizuj swoje dane</strong><small>Zmień hasło do konta administratora.</small></span>
                     <span class="admin-tile-arrow" aria-hidden="true">↗</span>
                 </button>
+                <button class="admin-tile" type="button" data-open-view="users-view">
+                    <span class="admin-tile-icon" aria-hidden="true">♧</span>
+                    <span class="admin-tile-copy"><strong>Zarządzaj użytkownikami</strong><small>Edytuj nicki, emaile i hasła kont.</small></span>
+                    <span class="admin-tile-arrow" aria-hidden="true">↗</span>
+                </button>
                 <a class="admin-tile" href="/forum/" target="_blank" rel="noopener">
                     <span class="admin-tile-icon" aria-hidden="true">☷</span>
                     <span class="admin-tile-copy"><strong>Sprawdź forum</strong><small>Otwórz aktualną sekcję forum FlootMC.</small></span>
                     <span class="admin-tile-arrow" aria-hidden="true">↗</span>
                 </a>
-                <a class="admin-tile" href="/" target="_blank" rel="noopener">
+                <a class="admin-tile" href="/">
                     <span class="admin-tile-icon" aria-hidden="true">⌂</span>
-                    <span class="admin-tile-copy"><strong>Zobacz stronę</strong><small>Otwórz publiczną stronę w nowej karcie.</small></span>
+                    <span class="admin-tile-copy"><strong>Wróć na stronę główną</strong><small>Przejdź z panelu na stronę FlootMC.</small></span>
                     <span class="admin-tile-arrow" aria-hidden="true">↗</span>
                 </a>
             </div>
@@ -89,6 +94,16 @@
                 </form>
             </div>
         </section>
+
+        <section id="users-view" class="admin-view admin-subview" hidden>
+            <div class="admin-subview-heading">
+                <button class="admin-back" type="button" data-back>← Panel główny</button>
+                <div><span class="admin-eyebrow">KONTA</span><h1>Użytkownicy</h1></div>
+            </div>
+            <div class="users-toolbar"><p class="editor-instructions">Zmiana adresu email może wymagać potwierdzenia przez użytkownika. Nowe hasło ustawiaj tylko na jego prośbę.</p><button class="editor-save" id="refresh-users" type="button">Odśwież listę</button></div>
+            <p class="editor-status" id="users-status" aria-live="polite"></p>
+            <div class="users-list" id="users-list" aria-live="polite"></div>
+        </section>
     </main>
 
     <dialog class="element-editor-dialog" id="element-editor">
@@ -101,7 +116,7 @@
     </dialog>
 
     <script type="module">
-        import { requireAdmin, changePassword, signOut, getSiteContent, saveSiteContent } from '../auth.js?v=c424da0';
+        import { requireAdmin, changePassword, signOut, getSiteContent, saveSiteContent, manageUsers, sendPasswordReset } from '../auth.js?v=users1';
 
         const admin = await requireAdmin();
         if (!admin) throw new Error('Logowanie administratora jest wymagane.');
@@ -111,6 +126,82 @@
         const showView = (id) => views.forEach((view) => { view.hidden = view.id !== id; });
         document.querySelectorAll('[data-open-view]').forEach((button) => button.addEventListener('click', () => showView(button.dataset.openView)));
         document.querySelectorAll('[data-back]').forEach((button) => button.addEventListener('click', () => showView('dashboard-view')));
+
+        const usersList = document.querySelector('#users-list');
+        const usersStatus = document.querySelector('#users-status');
+        const refreshUsers = async () => {
+            usersStatus.textContent = 'Pobieranie użytkowników…';
+            usersList.replaceChildren();
+            const { data, error } = await manageUsers('list-users');
+            if (error) { usersStatus.textContent = error.message; return; }
+            usersStatus.textContent = `Liczba kont: ${data.users.length}`;
+            for (const user of data.users) {
+                const card = document.createElement('article');
+                card.className = 'user-card';
+                const title = document.createElement('div');
+                title.className = 'user-card-heading';
+                const heading = document.createElement('h2');
+                heading.textContent = user.nickname || user.email || 'Konto bez nicku';
+                const state = document.createElement('span');
+                state.textContent = user.emailConfirmed ? 'Email potwierdzony' : 'Email niepotwierdzony';
+                title.append(heading, state);
+                const form = document.createElement('form');
+                form.className = 'user-edit-form';
+                const addField = (name, labelText, value, type = 'text', autocomplete = 'off') => {
+                    const label = document.createElement('label');
+                    label.textContent = labelText;
+                    const input = document.createElement('input');
+                    input.name = name;
+                    input.type = type;
+                    input.value = value ?? '';
+                    input.autocomplete = autocomplete;
+                    if (name !== 'password') input.required = name === 'email';
+                    if (name === 'password') { input.minLength = 12; input.placeholder = 'Pozostaw puste, aby nie zmieniać'; }
+                    label.append(input);
+                    form.append(label);
+                };
+                addField('email', 'Adres email', user.email, 'email');
+                addField('nickname', 'Nick', user.nickname);
+                addField('fullName', 'Nazwa / dane profilu', user.fullName);
+                addField('password', 'Ustaw nowe hasło (min. 12 znaków)', '', 'password', 'new-password');
+                const actions = document.createElement('div');
+                actions.className = 'user-card-actions';
+                const save = document.createElement('button');
+                save.className = 'editor-save';
+                save.type = 'submit';
+                save.textContent = 'Zapisz dane';
+                const reset = document.createElement('button');
+                reset.className = 'admin-back';
+                reset.type = 'button';
+                reset.textContent = 'Wyślij link zmiany hasła';
+                const status = document.createElement('p');
+                status.className = 'user-card-status';
+                status.setAttribute('aria-live', 'polite');
+                actions.append(save, reset);
+                form.append(actions, status);
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    const values = Object.fromEntries(new FormData(form));
+                    status.textContent = 'Zapisywanie…';
+                    const { data: result, error: saveError } = await manageUsers('update-user', { userId: user.id, ...values });
+                    status.textContent = saveError ? saveError.message : result.emailConfirmationRequired
+                        ? 'Zapisano. Użytkownik musi potwierdzić zmianę emaila; hasło i pozostałe dane już zaktualizowano.'
+                        : 'Zapisano zmiany konta.';
+                    if (!saveError) { form.elements.password.value = ''; refreshUsers(); }
+                });
+                reset.addEventListener('click', async () => {
+                    reset.disabled = true;
+                    status.textContent = 'Wysyłanie linku…';
+                    const { error: resetError } = await sendPasswordReset(user.nickname || user.email);
+                    status.textContent = resetError ? 'Nie udało się wysłać linku.' : 'Jeśli konto istnieje, link został wysłany na przypisany adres email.';
+                    reset.disabled = false;
+                });
+                card.append(title, form);
+                usersList.append(card);
+            }
+        };
+        document.querySelector('#refresh-users').addEventListener('click', refreshUsers);
+        document.querySelector('[data-open-view="users-view"]').addEventListener('click', () => { if (!usersList.childElementCount) refreshUsers(); });
 
         const passwordForm = document.querySelector('#password-form');
         const passwordMessage = document.querySelector('#password-message');

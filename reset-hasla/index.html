@@ -15,7 +15,7 @@
             <p id="reset-description">Podaj swój nick administracyjny. Wyślemy link do ustawienia nowego hasła na przypisany adres email.</p>
 
             <form id="request-form">
-                <label>Nick administratora<input name="nick" autocomplete="username" required placeholder="np. og_ranpeks"></label>
+                <label>Nick lub adres email<input name="nick" autocomplete="username" required placeholder="np. og_ranpeks"></label>
                 <p class="auth-message" id="request-message" aria-live="polite"></p>
                 <button class="auth-submit" type="submit">Wyślij link resetujący</button>
             </form>
@@ -31,7 +31,7 @@
         </section>
     </main>
     <script type="module">
-        import { sendPasswordReset, changePassword, signOut } from '../auth.js?v=e90fcd5';
+        import { sendPasswordReset, changePassword, signOut } from '../auth.js?v=users1';
 
         const queryParams = new URLSearchParams(window.location.search);
         const hashParams = new URLSearchParams(window.location.hash.slice(1));
@@ -40,6 +40,9 @@
         const recoveryForm = document.querySelector('#recovery-form');
         const description = document.querySelector('#reset-description');
         const backLink = document.querySelector('#reset-back');
+        const nickField = requestForm.elements.nick;
+        const requestedNick = queryParams.get('nick');
+        if (requestedNick) nickField.value = requestedNick;
         if (recoveryMode) {
             requestForm.hidden = true;
             recoveryForm.hidden = false;
@@ -65,9 +68,13 @@
             message.textContent = 'Wysyłanie…';
             const { error } = await sendPasswordReset(new FormData(requestForm).get('nick'));
             message.textContent = error
-                ? 'Nie udało się wysłać wiadomości. Sprawdź nick administratora i spróbuj ponownie.'
+                ? 'Nie udało się wysłać wiadomości. Spróbuj ponownie za chwilę.'
                 : 'Jeśli konto istnieje, wiadomość z linkiem resetującym została wysłana.';
         });
+
+        if (!recoveryMode && requestedNick && queryParams.get('send') === '1') {
+            requestForm.requestSubmit();
+        }
 
         recoveryForm.addEventListener('submit', async (event) => {
             event.preventDefault();

@@ -15,17 +15,27 @@
             <p>Zaloguj się swoim nickiem administracyjnym i tokenem.</p>
             <label>Nick administratora<input name="nick" autocomplete="username" required placeholder="np. og_ranpeks"></label>
             <label>Token / hasło<input name="password" type="password" autocomplete="current-password" required></label>
-            <a class="auth-back" href="/reset-hasla/">Nie pamiętasz hasła? Wyślij link resetujący</a>
+            <a class="auth-back" id="forgot-password" href="/reset-hasla/">Nie pamiętasz hasła? Wyślij link resetujący</a>
             <p class="auth-message" id="login-message" aria-live="polite"></p>
             <button class="auth-submit" type="submit">Zaloguj się</button>
             <a class="auth-back" href="../">Wróć na stronę główną</a>
         </form>
     </main>
     <script type="module">
-        import { signIn, getCurrentAdmin } from '../auth.js?v=e90fcd5';
+        import { signIn, getCurrentAdmin, sendPasswordReset } from '../auth.js?v=users1';
         if (await getCurrentAdmin()) window.location.replace('/panel/');
         const form = document.querySelector('#login-form');
         const message = document.querySelector('#login-message');
+        document.querySelector('#forgot-password').addEventListener('click', async (event) => {
+            const nick = form.elements.nick.value.trim();
+            if (!nick) return;
+            event.preventDefault();
+            message.textContent = 'Wysyłanie linku resetującego…';
+            const { error } = await sendPasswordReset(nick);
+            message.textContent = error
+                ? 'Nie udało się wysłać wiadomości. Spróbuj ponownie za chwilę.'
+                : 'Jeśli konto istnieje, wysłaliśmy na przypisany adres email link do zmiany hasła.';
+        });
         if (new URLSearchParams(window.location.search).has('password-reset')) {
             message.textContent = 'Hasło zostało zmienione. Zaloguj się nowym hasłem.';
         }
