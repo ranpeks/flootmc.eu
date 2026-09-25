@@ -1,8 +1,8 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 const supabase = createClient(
-    'https://mwelwsjtkjolaxjgdzyi.supabase.co',
-    'sb_publishable_E9oA-OKDJeHcS0MG8cJlCA_LcKvdoiN'
+    'https://sawxgllonwjjbmuaddyd.supabase.co',
+    'sb_publishable_PETx6WMwU5PGKzKZKQJwgw_P5WUw_i4'
 );
 
 const admins = {
@@ -23,6 +23,23 @@ export async function changePassword(password) {
     return supabase.auth.updateUser({ password });
 }
 
+export async function sendPasswordReset(nick) {
+    const admin = admins[nick.trim().toLowerCase()];
+    if (!admin) return { error: { message: 'Nieprawidłowy nick administratora.' } };
+    return supabase.auth.resetPasswordForEmail(admin.email, {
+        redirectTo: `${window.location.origin}/panel/?recovery=1`
+    });
+}
+
+export async function getSiteContent() {
+    const { data, error } = await supabase.from('site_content').select('key,value').order('key');
+    return { data: data ?? [], error };
+}
+
+export async function saveSiteContent(key, value) {
+    return supabase.from('site_content').upsert({ key, value }, { onConflict: 'key' });
+}
+
 export async function signOut() {
     return supabase.auth.signOut();
 }
@@ -39,7 +56,9 @@ export async function requireAdmin() {
 }
 
 supabase.auth.onAuthStateChange((event) => {
-    if (event === 'PASSWORD_RECOVERY') window.location.replace('/panel/');
+    if (event === 'PASSWORD_RECOVERY' && !window.location.pathname.startsWith('/panel/')) {
+        window.location.replace('/panel/?recovery=1');
+    }
 });
 
 async function renderAccountButton() {

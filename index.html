@@ -34,14 +34,14 @@
     <main>
         <section class="hero">
             <div class="hero-image">
-                <img src="https://i.imgur.com/WM6NQHV.png" alt="Przykładowy obrazek" class="floating">
+                <img src="https://i.imgur.com/WM6NQHV.png" data-site-content="hero_image_url" data-site-content-attribute="src" alt="Przykładowy obrazek" class="floating">
             </div>
             <div class="hero-content">
-                <h1>FlootMC</h1>
-                <p>Najlepsze klocki w Polsce</p>
+                <h1 data-site-content="hero_title">FlootMC</h1>
+                <p data-site-content="hero_subtitle">Najlepsze klocki w Polsce</p>
                 <div class="hero-buttons">
-                    <button class="copy-ip" type="button" onclick="copyIP()">Skopiuj IP</button>
-                    <button class="shop" type="button" onclick="window.location.href='sklep/'">Sklep</button>
+                    <button class="copy-ip" data-site-copy-ip type="button" onclick="copyIP()">Skopiuj IP</button>
+                    <button class="shop" data-site-content="shop_url" data-site-content-attribute="data-shop-url" type="button" onclick="window.location.href=this.dataset.shopUrl">Sklep</button>
                 </div>
             </div>
             <canvas class="particles"></canvas>
@@ -52,25 +52,25 @@
         <section id="administration" class="administration">
             <h2 class="section-title">Administracja</h2>
             <div class="admin owner">
-                <img src="https://mc-heads.net/avatar/OG_Ranpeks/160" data-mc-player="OG_Ranpeks" alt="Skin OG_Ranpeks">
-                <h3>Własciciel</h3>
-                <p>OG_Ranpeks</p>
+                <img src="https://mc-heads.net/avatar/OG_Ranpeks/160" data-site-content="admin_1_skin" data-site-content-attribute="data-mc-player" data-mc-player="OG_Ranpeks" alt="Skin OG_Ranpeks">
+                <h3 data-site-content="admin_1_role">Własciciel</h3>
+                <p data-site-content="admin_1_name">OG_Ranpeks</p>
             </div>
             <div class="admin ceo">
-                <img src="https://mc-heads.net/avatar/Betez68/160" data-mc-player="Betez68" alt="Skin Betez68">
-                <h3>Ceo</h3>
-                <p>Betez68</p>
+                <img src="https://mc-heads.net/avatar/Betez68/160" data-site-content="admin_2_skin" data-site-content-attribute="data-mc-player" data-mc-player="Betez68" alt="Skin Betez68">
+                <h3 data-site-content="admin_2_role">Ceo</h3>
+                <p data-site-content="admin_2_name">Betez68</p>
             </div>
             <div class="admin admin">
-                <img src="https://mc-heads.net/avatar/x_Bartek_x/160" data-mc-player="x_Bartek_x" alt="Skin x_Bartek_x">
-                <h3>Administrator</h3>
-                <p>x_Bartek_x</p>
+                <img src="https://mc-heads.net/avatar/x_Bartek_x/160" data-site-content="admin_3_skin" data-site-content-attribute="data-mc-player" data-mc-player="x_Bartek_x" alt="Skin x_Bartek_x">
+                <h3 data-site-content="admin_3_role">Administrator</h3>
+                <p data-site-content="admin_3_name">x_Bartek_x</p>
             </div>
         </section>
     <footer>
         <div class="footer-content">
             <div class="footer-logo">
-                <img src="https://i.imgur.com/WM6NQHV.png" alt="Logo">
+                <img src="https://i.imgur.com/WM6NQHV.png" data-site-content="logo_url" data-site-content-attribute="src" alt="Logo">
             </div>
             <div class="footer-menu">
                 <h4>MENU</h4>
@@ -96,14 +96,14 @@
             <div class="footer-links">
                 <h4>WAŻNE</h4>
                 <ul>
-                    <li><a href="https://www.facebook.com/FlootMC"><i class="fab fa-facebook"></i> Facebook</a></li>
-                    <li><a href="https://www.youtube.com/channel/UCynqhZzlURPSIovzN6-qKrw"><i class="fab fa-youtube"></i> YouTube</a></li>
-                    <li><a href="https://dc.flootmc.eu"><i class="fab fa-discord"></i> Discord</a></li>
+                    <li><a href="https://www.facebook.com/FlootMC" data-site-content="facebook_url" data-site-content-attribute="href"><i class="fab fa-facebook"></i> Facebook</a></li>
+                    <li><a href="https://www.youtube.com/channel/UCynqhZzlURPSIovzN6-qKrw" data-site-content="youtube_url" data-site-content-attribute="href"><i class="fab fa-youtube"></i> YouTube</a></li>
+                    <li><a href="https://dc.flootmc.eu" data-site-content="discord_url" data-site-content-attribute="href"><i class="fab fa-discord"></i> Discord</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>2026 - FlootMC | Wszelkie prawa zastrzeżone.</p>
+            <p><span data-site-content="footer_year">2026</span> - FlootMC | Wszelkie prawa zastrzeżone.</p>
             <p>Design by: Ranpeks | FlootMC</p>
         </div>
     </footer>
@@ -117,7 +117,7 @@
         });
 
         function copyIP() {
-            const ip = 'flootmc.eu';
+            const ip = window.siteContent?.server_ip || 'flootmc.eu';
             navigator.clipboard.writeText(ip).then(function() {
                 showNotification();
             }, function() {
@@ -199,5 +199,6 @@
             canvas.height = window.innerHeight;
         });
     </script>
+    <script type="module" src="site-content.js"></script>
 </body>
 </html>

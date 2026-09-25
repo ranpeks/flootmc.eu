@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#090712">
+    <title>Reset hasła — FlootMC</title>
+    <link rel="stylesheet" href="../styles.css?v=20260806">
+</head>
+<body>
+    <main class="auth-page">
+        <form class="auth-card" id="reset-form">
+            <img src="https://i.imgur.com/WM6NQHV.png" alt="FlootMC" class="auth-logo">
+            <h1>Reset hasła</h1>
+            <p>Podaj swój nick administracyjny. Wyślemy link do ustawienia nowego hasła na przypisany adres email.</p>
+            <label>Nick administratora<input name="nick" autocomplete="username" required placeholder="np. og_ranpeks"></label>
+            <p class="auth-message" id="reset-message" aria-live="polite"></p>
+            <button class="auth-submit" type="submit">Wyślij link resetujący</button>
+            <a class="auth-back" href="/logowanie/">Wróć do logowania</a>
+        </form>
+    </main>
+    <script type="module">
+        import { sendPasswordReset } from '../auth.js';
+        const form = document.querySelector('#reset-form');
+        const message = document.querySelector('#reset-message');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            message.textContent = 'Wysyłanie…';
+            const { error } = await sendPasswordReset(new FormData(form).get('nick'));
+            message.textContent = error
+                ? 'Nie udało się wysłać wiadomości. Sprawdź nick administratora i spróbuj ponownie.'
+                : 'Jeśli konto istnieje, wiadomość z linkiem resetującym została wysłana.';
+        });
+    </script>
+</body>
+</html>

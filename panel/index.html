@@ -12,7 +12,7 @@
         <section class="auth-card panel-card">
             <div class="panel-profile" id="panel-profile"></div>
             <h1>Mój profil</h1>
-            <p>Panel jest gotowy na przyszłe narzędzia aktualizacji strony i forum.</p>
+            <p>Zarządzaj treścią strony i swoim hasłem.</p>
             <hr>
             <h2>Zmień token / hasło</h2>
             <form id="password-form">
@@ -21,16 +21,61 @@
                 <p class="auth-message" id="password-message" aria-live="polite"></p>
                 <button class="auth-submit" type="submit">Zapisz nowe hasło</button>
             </form>
+            <hr>
+            <h2>Edycja treści strony</h2>
+            <p>Zmiany zapisują się od razu i są widoczne na stronie głównej.</p>
+            <form id="content-form" class="content-editor"></form>
+            <p class="auth-message" id="content-message" aria-live="polite"></p>
             <button class="auth-secondary" id="logout" type="button">Wyloguj się</button>
             <a class="auth-back" href="../">Wróć na stronę główną</a>
         </section>
     </main>
     <script type="module">
-        import { requireAdmin, changePassword, signOut } from '../auth.js';
+        import { requireAdmin, changePassword, signOut, getSiteContent, saveSiteContent } from '../auth.js';
         const admin = await requireAdmin();
         if (admin) document.querySelector('#panel-profile').innerHTML = `<img src="https://mc-heads.net/avatar/${encodeURIComponent(admin.skin)}/160" alt="Skin ${admin.label}"><div><strong>${admin.label}</strong><span>Administrator FlootMC</span></div>`;
+        const contentForm = document.querySelector('#content-form');
+        const contentMessage = document.querySelector('#content-message');
+        const contentLabels = {
+            hero_title: 'Tytuł strony głównej', hero_subtitle: 'Podtytuł strony głównej', hero_image_url: 'Grafika strony głównej (URL)',
+            logo_url: 'Logo (URL)', server_ip: 'Adres serwera', shop_url: 'Link do sklepu',
+            admin_1_name: 'Administrator 1 — nick', admin_1_role: 'Administrator 1 — rola', admin_1_skin: 'Administrator 1 — skin',
+            admin_2_name: 'Administrator 2 — nick', admin_2_role: 'Administrator 2 — rola', admin_2_skin: 'Administrator 2 — skin',
+            admin_3_name: 'Administrator 3 — nick', admin_3_role: 'Administrator 3 — rola', admin_3_skin: 'Administrator 3 — skin',
+            discord_url: 'Discord (URL)', facebook_url: 'Facebook (URL)', youtube_url: 'YouTube (URL)', footer_year: 'Rok w stopce'
+        };
+        const { data: siteContent, error: contentError } = await getSiteContent();
+        if (contentError) contentMessage.textContent = 'Nie udało się wczytać treści strony.';
+        for (const item of siteContent) {
+            const label = document.createElement('label');
+            label.textContent = contentLabels[item.key] ?? item.key;
+            const input = document.createElement('input');
+            input.name = item.key;
+            input.value = item.value;
+            input.required = true;
+            label.append(input);
+            contentForm.append(label);
+        }
+        const contentSave = document.createElement('button');
+        contentSave.className = 'auth-submit';
+        contentSave.type = 'submit';
+        contentSave.textContent = 'Zapisz treść strony';
+        contentForm.append(contentSave);
+        contentForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            contentMessage.textContent = 'Zapisywanie…';
+            for (const [key, value] of new FormData(contentForm)) {
+                const { error } = await saveSiteContent(key, value);
+                if (error) { contentMessage.textContent = 'Nie udało się zapisać zmian.'; return; }
+            }
+            contentMessage.textContent = 'Zmiany zapisane.';
+        });
         const form = document.querySelector('#password-form');
         const message = document.querySelector('#password-message');
+        if (new URLSearchParams(window.location.search).has('recovery')) {
+            message.textContent = 'Ustaw nowe hasło do konta.';
+            document.querySelector('#password-form input[name="password"]').focus();
+        }
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
             const { password, confirmPassword } = Object.fromEntries(new FormData(form));
