@@ -60,7 +60,10 @@ export async function requireAdmin() {
 
 supabase.auth.onAuthStateChange((event) => {
     if (event === 'PASSWORD_RECOVERY' && !window.location.pathname.startsWith('/reset-hasla/')) {
-        window.location.replace('/reset-hasla/?recovery=1');
+        const recoveryUrl = new URL('/reset-hasla/', window.location.origin);
+        recoveryUrl.searchParams.set('recovery', '1');
+        recoveryUrl.hash = window.location.hash;
+        window.location.replace(recoveryUrl.toString());
     }
 });
 
