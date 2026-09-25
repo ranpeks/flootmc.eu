@@ -1,5 +1,6 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
+const initialRecoveryHash = window.location.hash;
 const supabase = createClient(
     'https://sawxgllonwjjbmuaddyd.supabase.co',
     'sb_publishable_PETx6WMwU5PGKzKZKQJwgw_P5WUw_i4'
@@ -58,14 +59,22 @@ export async function requireAdmin() {
     return admin;
 }
 
+function openPasswordRecoveryForm() {
+    if (window.location.pathname.startsWith('/reset-hasla/')) return;
+
+    const recoveryUrl = new URL('/reset-hasla/', window.location.origin);
+    recoveryUrl.searchParams.set('recovery', '1');
+    recoveryUrl.hash = initialRecoveryHash || window.location.hash;
+    window.location.replace(recoveryUrl.toString());
+}
+
 supabase.auth.onAuthStateChange((event) => {
-    if (event === 'PASSWORD_RECOVERY' && !window.location.pathname.startsWith('/reset-hasla/')) {
-        const recoveryUrl = new URL('/reset-hasla/', window.location.origin);
-        recoveryUrl.searchParams.set('recovery', '1');
-        recoveryUrl.hash = window.location.hash;
-        window.location.replace(recoveryUrl.toString());
-    }
+    if (event === 'PASSWORD_RECOVERY') openPasswordRecoveryForm();
 });
+
+if (new URLSearchParams(initialRecoveryHash.slice(1)).get('type') === 'recovery') {
+    openPasswordRecoveryForm();
+}
 
 async function renderAccountButton() {
     const admin = await getCurrentAdmin();
