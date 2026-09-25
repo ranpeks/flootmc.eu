@@ -63,7 +63,7 @@ Deno.serve(async (req: Request) => {
     } catch {
       redirect = null;
     }
-    if (!nick || !redirect || redirect.origin !== "https://flootmc.eu" || redirect.pathname !== "/reset-hasla/" || redirect.searchParams.get("recovery") !== "1") {
+    if (nick.length < 3 || !redirect || redirect.origin !== "https://flootmc.eu" || redirect.pathname !== "/reset-hasla/" || redirect.searchParams.get("recovery") !== "1") {
       return json({ error: "Nieprawidłowe żądanie." }, 400);
     }
     try {
@@ -133,6 +133,7 @@ Deno.serve(async (req: Request) => {
       if (isConfiguredAdmin && nickname.toLowerCase() !== String(found.user.user_metadata?.nickname ?? "").toLowerCase()) {
         return json({ error: "Nicka administratora nie można zmienić z tego panelu, ponieważ jest używany do logowania." }, 400);
       }
+      if (nickname.length < 3) return json({ error: "Nick musi mieć co najmniej 3 znaki." }, 400);
       if (nickname.length > 40) return json({ error: "Nick może mieć maksymalnie 40 znaków." }, 400);
       userMetadata.nickname = nickname;
       updates.user_metadata = userMetadata;
@@ -144,7 +145,7 @@ Deno.serve(async (req: Request) => {
       updates.user_metadata = userMetadata;
     }
     if (typeof body.password === "string" && body.password.length) {
-      if (body.password.length < 12 || body.password.length > 128) return json({ error: "Hasło musi mieć od 12 do 128 znaków." }, 400);
+      if (body.password.length < 6 || body.password.length > 128) return json({ error: "Hasło musi mieć od 6 do 128 znaków." }, 400);
       updates.password = body.password;
     }
     if (!Object.keys(updates).length) return json({ error: "Nie podano zmian." }, 400);

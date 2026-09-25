@@ -87,8 +87,8 @@
             <div class="profile-settings-card">
                 <div class="profile-settings-intro"><h2>Zmień hasło</h2><p>Ustaw nowe hasło do konta administratora.</p></div>
                 <form id="password-form">
-                    <label>Nowe hasło<input name="password" type="password" autocomplete="new-password" minlength="12" required></label>
-                    <label>Powtórz nowe hasło<input name="confirmPassword" type="password" autocomplete="new-password" minlength="12" required></label>
+                    <label>Nowe hasło<input name="password" type="password" autocomplete="new-password" minlength="6" required></label>
+                    <label>Powtórz nowe hasło<input name="confirmPassword" type="password" autocomplete="new-password" minlength="6" required></label>
                     <p class="auth-message" id="password-message" aria-live="polite"></p>
                     <button class="editor-save" type="submit">Zapisz nowe hasło</button>
                 </form>
@@ -116,7 +116,7 @@
     </dialog>
 
     <script type="module">
-        import { requireAdmin, changePassword, signOut, getSiteContent, saveSiteContent, manageUsers, sendPasswordReset } from '../auth.js?v=users1';
+        import { requireAdmin, changePassword, signOut, getSiteContent, saveSiteContent, manageUsers, sendPasswordReset } from '../auth.js?v=credentials-minimums';
 
         const admin = await requireAdmin();
         if (!admin) throw new Error('Logowanie administratora jest wymagane.');
@@ -156,14 +156,15 @@
                     input.value = value ?? '';
                     input.autocomplete = autocomplete;
                     if (name !== 'password') input.required = name === 'email';
-                    if (name === 'password') { input.minLength = 12; input.placeholder = 'Pozostaw puste, aby nie zmieniać'; }
+                    if (name === 'nickname') input.minLength = 3;
+                    if (name === 'password') { input.minLength = 6; input.placeholder = 'Pozostaw puste, aby nie zmieniać'; }
                     label.append(input);
                     form.append(label);
                 };
                 addField('email', 'Adres email', user.email, 'email');
                 addField('nickname', 'Nick', user.nickname);
                 addField('fullName', 'Nazwa / dane profilu', user.fullName);
-                addField('password', 'Ustaw nowe hasło (min. 12 znaków)', '', 'password', 'new-password');
+                addField('password', 'Ustaw nowe hasło (min. 6 znaków)', '', 'password', 'new-password');
                 const actions = document.createElement('div');
                 actions.className = 'user-card-actions';
                 const save = document.createElement('button');

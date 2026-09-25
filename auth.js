@@ -19,16 +19,20 @@ const admins = {
 const getAdminByEmail = (email) => Object.entries(admins).find(([, admin]) => admin.email === email)?.[1] ?? null;
 
 export async function signIn(nick, password) {
+    if (nick.trim().length < 3) return { error: { message: 'Nick musi mieć co najmniej 3 znaki.' } };
+    if (password.length < 6) return { error: { message: 'Hasło musi mieć co najmniej 6 znaków.' } };
     const admin = admins[nick.trim().toLowerCase()];
     if (!admin) return { error: { message: 'Nieprawidłowy nick administratora.' } };
     return supabase.auth.signInWithPassword({ email: admin.email, password });
 }
 
 export async function changePassword(password) {
+    if (password.length < 6) return { error: { message: 'Hasło musi mieć co najmniej 6 znaków.' } };
     return supabase.auth.updateUser({ password });
 }
 
 export async function sendPasswordReset(nick) {
+    if (String(nick ?? '').trim().length < 3) return { error: { message: 'Nick musi mieć co najmniej 3 znaki.' } };
     const recoveryUrl = new URL('/reset-hasla/', window.location.origin);
     recoveryUrl.searchParams.set('recovery', '1');
     try {

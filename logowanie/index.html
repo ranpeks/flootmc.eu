@@ -13,8 +13,8 @@
             <img src="https://i.imgur.com/WM6NQHV.png" alt="FlootMC" class="auth-logo">
             <h1>Panel administracji</h1>
             <p>Zaloguj się swoim nickiem administracyjnym i tokenem.</p>
-            <label>Nick administratora<input name="nick" autocomplete="username" required placeholder="np. og_ranpeks"></label>
-            <label>Token / hasło<input name="password" type="password" autocomplete="current-password" required></label>
+            <label>Nick administratora<input name="nick" autocomplete="username" minlength="3" required placeholder="np. og_ranpeks"></label>
+            <label>Token / hasło<input name="password" type="password" autocomplete="current-password" minlength="6" required></label>
             <a class="auth-back" id="forgot-password" href="/reset-hasla/">Nie pamiętasz hasła? Wyślij link resetujący</a>
             <p class="auth-message" id="login-message" aria-live="polite"></p>
             <button class="auth-submit" type="submit">Zaloguj się</button>
@@ -22,7 +22,7 @@
         </form>
     </main>
     <script type="module">
-        import { signIn, getCurrentAdmin, sendPasswordReset } from '../auth.js?v=users1';
+        import { signIn, getCurrentAdmin, sendPasswordReset } from '../auth.js?v=credentials-minimums';
         if (await getCurrentAdmin()) window.location.replace('/panel/');
         const form = document.querySelector('#login-form');
         const message = document.querySelector('#login-message');

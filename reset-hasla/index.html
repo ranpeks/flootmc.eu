@@ -15,14 +15,14 @@
             <p id="reset-description">Podaj swój nick administracyjny. Wyślemy link do ustawienia nowego hasła na przypisany adres email.</p>
 
             <form id="request-form">
-                <label>Nick lub adres email<input name="nick" autocomplete="username" required placeholder="np. og_ranpeks"></label>
+                <label>Nick lub adres email<input name="nick" autocomplete="username" minlength="3" required placeholder="np. og_ranpeks"></label>
                 <p class="auth-message" id="request-message" aria-live="polite"></p>
                 <button class="auth-submit" type="submit">Wyślij link resetujący</button>
             </form>
 
             <form id="recovery-form" hidden>
-                <label>Nowe hasło<input name="password" type="password" autocomplete="new-password" minlength="12" required></label>
-                <label>Powtórz nowe hasło<input name="confirmPassword" type="password" autocomplete="new-password" minlength="12" required></label>
+                <label>Nowe hasło<input name="password" type="password" autocomplete="new-password" minlength="6" required></label>
+                <label>Powtórz nowe hasło<input name="confirmPassword" type="password" autocomplete="new-password" minlength="6" required></label>
                 <p class="auth-message" id="recovery-message" aria-live="polite"></p>
                 <button class="auth-submit" type="submit">Zapisz nowe hasło</button>
             </form>
@@ -31,7 +31,7 @@
         </section>
     </main>
     <script type="module">
-        import { sendPasswordReset, changePassword, signOut } from '../auth.js?v=users1';
+        import { sendPasswordReset, changePassword, signOut } from '../auth.js?v=credentials-minimums';
 
         const queryParams = new URLSearchParams(window.location.search);
         const hashParams = new URLSearchParams(window.location.hash.slice(1));
