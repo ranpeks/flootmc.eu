@@ -74,6 +74,7 @@ async function renderAccountButton() {
         <div class="account-dropdown" hidden>
             <strong>${admin.label}</strong>
             <a href="/panel/">Mój profil</a>
+            <a href="/panel/strona/">Edytuj treści strony</a>
             <button type="button" class="account-logout">Wyloguj</button>
         </div>`;
     document.body.append(menu);
