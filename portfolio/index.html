@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ranpeks | Portfolio</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=contact-avatar-20260925">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
@@ -525,8 +525,7 @@
                     </div>
                     <div class="response-info">
                         <i class="fas fa-info-circle"></i>
-                        <p>Po wysłaniu wiadomości otrzymasz automatyczne potwierdzenie na podany adres email. 
-                           Administrator odpowie w ciągu <strong>24 godzin</strong>.</p>
+                        <p>Formularz wyśle Twoją wiadomość na adres kontakt@flootmc.eu. Odpowiemy w ciągu <strong>24 godzin</strong>.</p>
                     </div>
                 </div>
                 <form class="contact-form" id="contactForm">
@@ -555,9 +554,14 @@
                         <textarea id="message" name="message" rows="5" 
                                   placeholder="Opisz czego potrzebujesz..." required></textarea>
                     </div>
+                    <div class="form-group contact-honeypot" aria-hidden="true">
+                        <label for="website">Strona internetowa</label>
+                        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                    </div>
                     <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
                         <i class="fas fa-paper-plane"></i> Wyślij wiadomość
                     </button>
+                    <p class="contact-privacy-note">Dane z formularza przesyłamy do kontakt@flootmc.eu wyłącznie w celu odpowiedzi na wiadomość.</p>
                     <div class="form-status" id="formStatus"></div>
                 </form>
             </div>
@@ -602,7 +606,8 @@
         <i class="fas fa-arrow-up"></i>
     </button>
 
-    <script src="main.js"></script>
+    <script src="main.js?v=contact-form-20260925"></script>
     <script type="module" src="../site-content.js?v=63cca3e"></script>
+    <script type="module" src="../auth.js?v=4d52cec"></script>
 </body>
 </html>

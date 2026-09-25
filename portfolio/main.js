@@ -253,27 +253,31 @@ contactForm.addEventListener('submit', async (e) => {
     formStatus.textContent = 'Wysyłanie wiadomości...';
     formStatus.style.display = 'block';
     
-    const formData = new FormData(contactForm);
+    const formData = Object.fromEntries(new FormData(contactForm).entries());
     
     try {
-        const response = await fetch('api/send-mail.php', {
+        const response = await fetch('https://sawxgllonwjjbmuaddyd.supabase.co/functions/v1/portfolio-contact', {
             method: 'POST',
-            body: formData
+            headers: {
+                'Content-Type': 'application/json',
+                apikey: 'sb_publishable_PETx6WMwU5PGKzKZKQJwgw_P5WUw_i4'
+            },
+            body: JSON.stringify(formData)
         });
         
         const result = await response.json();
         
         if (result.success) {
             formStatus.className = 'form-status success';
-            formStatus.innerHTML = '<i class="fas fa-check-circle"></i> ' + result.message;
+            formStatus.textContent = result.message;
             contactForm.reset();
         } else {
             formStatus.className = 'form-status error';
-            formStatus.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + result.message;
+            formStatus.textContent = result.message || 'Nie udało się wysłać wiadomości. Spróbuj ponownie.';
         }
     } catch (error) {
         formStatus.className = 'form-status error';
-        formStatus.innerHTML = '<i class="fas fa-exclamation-circle"></i> Wystąpił błąd. Spróbuj ponownie.';
+        formStatus.textContent = 'Wystąpił błąd połączenia. Spróbuj ponownie lub napisz na kontakt@flootmc.eu.';
     }
     
     submitBtn.disabled = false;
