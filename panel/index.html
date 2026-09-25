@@ -31,7 +31,7 @@
         </section>
     </main>
     <script type="module">
-        import { requireAdmin, changePassword, signOut, getSiteContent, saveSiteContent } from '../auth.js?v=recovery-fix-20260925';
+        import { requireAdmin, changePassword, signOut, getSiteContent, saveSiteContent } from '../auth.js?v=e90fcd5';
         const admin = await requireAdmin();
         if (admin) document.querySelector('#panel-profile').innerHTML = `<img src="https://mc-heads.net/avatar/${encodeURIComponent(admin.skin)}/160" alt="Skin ${admin.label}"><div><strong>${admin.label}</strong><span>Administrator FlootMC</span></div>`;
         const contentForm = document.querySelector('#content-form');
