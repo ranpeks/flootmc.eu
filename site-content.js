@@ -1,8 +1,7 @@
-import { getSiteContent } from './auth.js';
-
-const { data, error } = await getSiteContent();
-if (!error) {
-    const content = Object.fromEntries(data.map(({ key, value }) => [key, value]));
+try {
+    const response = await fetch(new URL('./site-content.json', import.meta.url), { cache: 'no-store' });
+    if (!response.ok) throw new Error('Nie udało się wczytać treści strony.');
+    const content = await response.json();
     for (const element of document.querySelectorAll('[data-site-content]')) {
         const key = element.dataset.siteContent;
         if (!(key in content)) continue;
@@ -19,4 +18,6 @@ if (!error) {
         }
     }
     window.siteContent = content;
+} catch (error) {
+    console.error('FlootMC site content could not be loaded:', error);
 }

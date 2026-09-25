@@ -70,6 +70,7 @@ async function renderAccountButton() {
     menu.innerHTML = `
         <button class="account-avatar" type="button" aria-expanded="false" aria-label="Otwórz konto administratora">
             <img src="https://mc-heads.net/avatar/${encodeURIComponent(admin.skin)}/96" alt="Skin ${admin.label}">
+            <span class="account-gear" aria-hidden="true">⚙</span>
         </button>
         <div class="account-dropdown" hidden>
             <strong>${admin.label}</strong>

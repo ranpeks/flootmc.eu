@@ -23,7 +23,7 @@
             </form>
             <hr>
             <h2>Edycja treści strony</h2>
-            <p>Zmiany zapisują się od razu i są widoczne na stronie głównej.</p>
+            <p>Po zapisaniu zmiany zostaną opublikowane na GitHub Pages w ciągu kilku minut.</p>
             <form id="content-form"></form>
             <p class="auth-message" id="content-message" aria-live="polite"></p>
             <button class="auth-secondary" id="logout" type="button">Wyloguj się</button>
@@ -68,7 +68,7 @@
                 const { error } = await saveSiteContent(key, value);
                 if (error) { contentMessage.textContent = 'Nie udało się zapisać zmian.'; return; }
             }
-            contentMessage.textContent = 'Zmiany zapisane.';
+            contentMessage.textContent = 'Zmiany zapisane. Publikacja na stronie może potrwać kilka minut.';
         });
         const form = document.querySelector('#password-form');
         const message = document.querySelector('#password-message');
@@ -82,6 +82,11 @@
             if (password !== confirmPassword) { message.textContent = 'Podane tokeny nie są identyczne.'; return; }
             const { error } = await changePassword(password);
             message.textContent = error ? 'Nie udało się zmienić hasła.' : 'Hasło zostało zmienione.';
+            if (!error && new URLSearchParams(window.location.search).has('recovery')) {
+                await signOut();
+                window.location.replace('/logowanie/?password-reset=success');
+                return;
+            }
             if (!error) form.reset();
         });
         document.querySelector('#logout').addEventListener('click', async () => { await signOut(); window.location.assign('/'); });

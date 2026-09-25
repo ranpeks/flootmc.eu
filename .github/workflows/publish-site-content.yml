@@ -1,0 +1,40 @@
+name: Publish site content
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-site-content
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Publish the latest approved content
+        env:
+          SUPABASE_URL: https://sawxgllonwjjbmuaddyd.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: sb_publishable_PETx6WMwU5PGKzKZKQJwgw_P5WUw_i4
+        run: node scripts/sync-site-content.mjs
+
+      - name: Commit content when it changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site-content.json
+          if git diff --cached --quiet; then
+            echo "No content changes to publish."
+            exit 0
+          fi
+          git commit -m "Publish site content"
+          git push
