@@ -160,7 +160,7 @@
     </dialog>
 
     <script type="module">
-        import { requireAdmin, changePassword, signOut, getSiteContent, saveSiteContent, manageUsers, sendPasswordReset, getSiteAvailability, saveSiteAvailability } from '../auth.js?v=credentials-minimums';
+        import { requireAdmin, changePassword, signOut, getSiteContent, saveSiteContent, manageUsers, sendPasswordReset, getSiteAvailability, saveSiteAvailability } from '../auth.js?v=maintenance-deadline-1';
 
         const admin = await requireAdmin();
         if (!admin) throw new Error('Logowanie administratora jest wymagane.');

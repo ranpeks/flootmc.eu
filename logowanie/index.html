@@ -25,7 +25,7 @@
         </form>
     </main>
     <script type="module">
-        import { signIn, getCurrentAdmin, sendPasswordReset } from '../auth.js?v=credentials-minimums';
+        import { signIn, getCurrentAdmin, sendPasswordReset } from '../auth.js?v=maintenance-deadline-1';
         if (await getCurrentAdmin() && !new URLSearchParams(window.location.search).has('editorPreview')) window.location.replace('/panel/');
         const form = document.querySelector('#login-form');
         const message = document.querySelector('#login-message');

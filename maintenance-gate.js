@@ -1,4 +1,4 @@
-import { getCurrentAdmin, getSiteAvailability } from './auth.js?v=credentials-minimums';
+import { getCurrentAdmin, getSiteAvailability } from './auth.js?v=maintenance-deadline-1';
 
 const access = document.documentElement;
 const path = window.location.pathname.replace(/index\.html$/, '').replace(/\/$/, '') || '/';

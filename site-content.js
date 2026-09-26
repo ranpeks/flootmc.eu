@@ -20,7 +20,7 @@ try {
     let editorDocument = content.site_editor_document ?? {};
     // Visual edits are saved to Supabase so they are applied on every page.
     try {
-        const { getSiteContent } = await import('./auth.js?v=credentials-minimums');
+        const { getSiteContent } = await import('./auth.js?v=maintenance-deadline-1');
         const { data: rows } = await getSiteContent();
         const savedDocument = rows?.find((row) => row.key === 'site_editor_document')?.value;
         if (savedDocument) editorDocument = savedDocument;
