@@ -3,7 +3,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#090712">
+        <script>document.documentElement.dataset.siteAccess='checking'</script>
+    <style>html[data-site-access="checking"] body{visibility:hidden}</style>
+    <script type="module" src="/maintenance-gate.js?v=site-mode-1"></script>
+<meta name="theme-color" content="#090712">
+    <script type="module" src="../site-content.js?v=visual-editor-2"></script>
     <title>Panel administratora — FlootMC</title>
     <link rel="stylesheet" href="../styles.css?v=account-dropdown-hidden">
     <link rel="stylesheet" href="../panel.css?v=users1">
@@ -40,6 +44,11 @@
                     <span class="admin-tile-copy"><strong>Zarządzaj użytkownikami</strong><small>Edytuj nicki, emaile i hasła kont.</small></span>
                     <span class="admin-tile-arrow" aria-hidden="true">↗</span>
                 </button>
+                <button class="admin-tile" type="button" data-open-view="website-view">
+                    <span class="admin-tile-icon" aria-hidden="true">◎</span>
+                    <span class="admin-tile-copy"><strong>WWW</strong><small>Włącz stronę, wyłącz ją lub ustaw przerwę konserwacyjną.</small></span>
+                    <span class="admin-tile-arrow" aria-hidden="true">↗</span>
+                </button>
                 <a class="admin-tile" href="/forum/" target="_blank" rel="noopener">
                     <span class="admin-tile-icon" aria-hidden="true">☷</span>
                     <span class="admin-tile-copy"><strong>Sprawdź forum</strong><small>Otwórz aktualną sekcję forum FlootMC.</small></span>
@@ -71,12 +80,33 @@
                     <option value="/inne/">Inne</option>
                     <option value="/polityka-prywatnosci/">Polityka prywatności</option>
                     <option value="/portfolio/">Portfolio</option>
+                    <option value="/logowanie/">Logowanie</option>
+                    <option value="/reset-hasla/">Reset hasła</option>
+                    <option value="/panel/">Panel administracyjny</option>
                 </select>
                 <p class="editor-instructions">Dwukliknij tekst, obraz lub odnośnik, aby go edytować.</p>
                 <button class="editor-save" id="save-editor" type="button">Zapisz i opublikuj</button>
             </div>
             <p class="editor-status" id="editor-status" aria-live="polite"></p>
             <div class="editor-preview-frame"><iframe id="site-preview" title="Podgląd edytowanej strony"></iframe></div>
+        </section>
+
+        <section id="website-view" class="admin-view admin-subview" hidden>
+            <div class="admin-subview-heading">
+                <button class="admin-back" type="button" data-back>← Panel główny</button>
+                <div><span class="admin-eyebrow">DOSTĘPNOŚĆ</span><h1>WWW</h1></div>
+            </div>
+            <div class="profile-settings-card website-settings-card">
+                <div class="profile-settings-intro"><h2>Sterowanie stroną</h2><p>Wybierz, co zobaczą odwiedzający. Zalogowani administratorzy nadal zobaczą stronę.</p></div>
+                <label for="site-availability-select">Tryb strony</label>
+                <select id="site-availability-select">
+                    <option value="live">Strona włączona</option>
+                    <option value="disabled">Strona wyłączona</option>
+                    <option value="maintenance">Przerwa konserwacyjna</option>
+                </select>
+                <p class="editor-status" id="site-availability-status" aria-live="polite"></p>
+                <button class="editor-save" id="save-site-availability" type="button">Zapisz ustawienie</button>
+            </div>
         </section>
 
         <section id="profile-view" class="admin-view admin-subview" hidden>
@@ -116,7 +146,7 @@
     </dialog>
 
     <script type="module">
-        import { requireAdmin, changePassword, signOut, getSiteContent, saveSiteContent, manageUsers, sendPasswordReset } from '../auth.js?v=credentials-minimums';
+        import { requireAdmin, changePassword, signOut, getSiteContent, saveSiteContent, manageUsers, sendPasswordReset, getSiteAvailability, saveSiteAvailability } from '../auth.js?v=credentials-minimums';
 
         const admin = await requireAdmin();
         if (!admin) throw new Error('Logowanie administratora jest wymagane.');
@@ -204,6 +234,21 @@
         document.querySelector('#refresh-users').addEventListener('click', refreshUsers);
         document.querySelector('[data-open-view="users-view"]').addEventListener('click', () => { if (!usersList.childElementCount) refreshUsers(); });
 
+        const availabilitySelect = document.querySelector('#site-availability-select');
+        const availabilityStatus = document.querySelector('#site-availability-status');
+        document.querySelector('[data-open-view="website-view"]').addEventListener('click', async () => {
+            availabilityStatus.textContent = 'Wczytywanie ustawień…';
+            const { data, error } = await getSiteAvailability();
+            if (error) { availabilityStatus.textContent = 'Nie udało się wczytać trybu strony.'; return; }
+            availabilitySelect.value = ['live', 'disabled', 'maintenance'].includes(data) ? data : 'live';
+            availabilityStatus.textContent = 'Aktualny tryb: ' + availabilitySelect.selectedOptions[0].textContent + '.';
+        });
+        document.querySelector('#save-site-availability').addEventListener('click', async () => {
+            availabilityStatus.textContent = 'Zapisywanie…';
+            const { error } = await saveSiteAvailability(availabilitySelect.value);
+            availabilityStatus.textContent = error ? 'Nie udało się zapisać ustawienia. Sprawdź połączenie i uprawnienia.' : 'Zapisano tryb strony.';
+        });
+
         const passwordForm = document.querySelector('#password-form');
         const passwordMessage = document.querySelector('#password-message');
         passwordForm.addEventListener('submit', async (event) => {
@@ -262,23 +307,44 @@
             } catch { return false; }
         };
 
+        const getTextNode = (element) => {
+            const walker = element.ownerDocument.createTreeWalker(element, NodeFilter.SHOW_TEXT, {
+                acceptNode(node) {
+                    return node.nodeValue.trim() && !node.parentElement.closest('script,style,noscript,svg,[aria-hidden="true"]')
+                        ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+                }
+            });
+            return walker.nextNode();
+        };
+
         function applyPreviewEdits() {
             const doc = preview.contentDocument;
             if (!doc?.body) return;
             for (const [path, edit] of Object.entries(getPageEdits(pageSelect.value))) {
                 const element = resolveElement(doc, path);
                 if (!element) continue;
-                if (typeof edit.text === 'string' && element.childElementCount === 0) element.textContent = edit.text;
+                if (typeof edit.text === 'string') {
+                    if (Number.isInteger(edit.textNodeIndex)) {
+                        const node = element.childNodes[edit.textNodeIndex];
+                        if (node?.nodeType === Node.TEXT_NODE) node.nodeValue = edit.text;
+                    } else if (element.childElementCount === 0) element.textContent = edit.text;
+                }
                 if (typeof edit.href === 'string') {
                     if (element.matches('a')) element.setAttribute('href', edit.href);
                     else if (element.hasAttribute('data-shop-url')) element.dataset.shopUrl = edit.href;
                 }
                 if (typeof edit.src === 'string' && element.matches('img')) element.setAttribute('src', edit.src);
+                if (typeof edit.alt === 'string' && element.matches('img')) element.setAttribute('alt', edit.alt);
+                if (typeof edit.title === 'string') element.setAttribute('title', edit.title);
+                if (typeof edit.ariaLabel === 'string') element.setAttribute('aria-label', edit.ariaLabel);
+                if (typeof edit.placeholder === 'string' && element.matches('input,textarea')) element.setAttribute('placeholder', edit.placeholder);
+                if (typeof edit.backgroundImage === 'string' && validUrl(edit.backgroundImage, true)) element.style.backgroundImage = `url("${edit.backgroundImage.replace(/["\\]/g, '')}")`;
             }
         }
 
         function loadPreview() {
             const url = new URL(pageSelect.value, window.location.origin);
+            url.searchParams.set('editorPreview', '1');
             url.searchParams.set('preview', Date.now().toString());
             previewLoaded = true;
             preview.src = url.toString();
@@ -291,7 +357,7 @@
             const input = document.createElement(multiline ? 'textarea' : 'input');
             input.name = name;
             input.value = value;
-            input.required = name !== 'text';
+            input.required = !['text', 'title', 'ariaLabel', 'backgroundImage'].includes(name);
             label.append(input);
             editorFields.append(label);
         }
@@ -304,23 +370,37 @@
             event.stopPropagation();
 
             const image = rawTarget.closest('img');
-            const textElement = rawTarget.closest('h1,h2,h3,h4,h5,p,button,span,strong,em,small,label') ?? (rawTarget.childElementCount === 0 ? rawTarget : null);
-            const textTarget = textElement && textElement.childElementCount === 0 && textElement.textContent.trim() ? textElement : null;
+            const textTarget = rawTarget.closest('script,style,noscript,svg,[aria-hidden="true"]') ? null : rawTarget;
+            const textNode = textTarget ? getTextNode(textTarget) : null;
             const linkTarget = rawTarget.closest('a') ?? rawTarget.closest('[data-shop-url]');
-            if (!image && !textTarget && !linkTarget) return;
+            const inputTarget = rawTarget.closest('input,textarea');
+            const editableTarget = image || textNode || linkTarget || inputTarget ? rawTarget : null;
+            if (!editableTarget) return;
+            const editablePath = getElementPath(rawTarget, doc);
 
             selectedElements = {
                 image,
-                text: textTarget,
+                text: textNode,
                 link: linkTarget,
+                target: rawTarget,
                 imagePath: image ? getElementPath(image, doc) : null,
-                textPath: textTarget ? getElementPath(textTarget, doc) : null,
-                linkPath: linkTarget ? getElementPath(linkTarget, doc) : null
+                textPath: textNode ? getElementPath(textNode.parentElement, doc) : null,
+                textNodeIndex: textNode ? Array.prototype.indexOf.call(textNode.parentElement.childNodes, textNode) : null,
+                linkPath: linkTarget ? getElementPath(linkTarget, doc) : null,
+                targetPath: editablePath,
+                input: inputTarget
             };
             editorFields.replaceChildren();
-            if (textTarget) addEditorField('text', 'Tekst', textTarget.textContent, true);
+            if (textNode) addEditorField('text', 'Tekst', textNode.nodeValue.trim(), true);
             if (linkTarget) addEditorField('href', 'Adres docelowy', linkTarget.matches('a') ? linkTarget.getAttribute('href') : linkTarget.dataset.shopUrl, false);
             if (image) addEditorField('src', 'Adres obrazka', image.getAttribute('src'), false);
+            if (image) addEditorField('alt', 'Tekst alternatywny obrazka', image.getAttribute('alt') ?? '', false);
+            if (inputTarget) addEditorField('placeholder', 'Podpowiedź pola', inputTarget.getAttribute('placeholder') ?? '', false);
+            const backgroundMatch = getComputedStyle(rawTarget).backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+            addEditorField('backgroundImage', 'Adres grafiki tła (opcjonalnie)', backgroundMatch?.[1] ?? '', false);
+            if (rawTarget.matches('input[type="password"],input[type="hidden"],script,style,link,meta')) { editorFields.replaceChildren(); addEditorField('title', 'Opis / tytuł', rawTarget.getAttribute('title') ?? '', false); }
+            else addEditorField('title', 'Opis / tytuł (opcjonalnie)', rawTarget.getAttribute('title') ?? '', false);
+            addEditorField('ariaLabel', 'Etykieta dostępności (opcjonalnie)', rawTarget.getAttribute('aria-label') ?? '', false);
             document.querySelector('#element-editor-error').textContent = '';
             editorDialog.showModal();
             editorFields.querySelector('textarea,input')?.focus();
@@ -336,10 +416,11 @@
             doc.body.classList.add('floot-editor-active');
             doc.addEventListener('mouseover', (event) => {
                 doc.querySelectorAll('[data-editor-hover]').forEach((element) => element.removeAttribute('data-editor-hover'));
-                const target = event.target?.nodeType === 1 ? event.target.closest('img,a,h1,h2,h3,h4,h5,p,button,span,strong,em,small,label') : null;
+                const target = event.target?.nodeType === 1 ? event.target : event.target?.parentElement;
                 if (target) target.setAttribute('data-editor-hover', '');
             });
             doc.addEventListener('click', (event) => {
+                if (event.target?.closest('[data-open-view],[data-back]')) return;
                 event.preventDefault();
                 event.stopImmediatePropagation();
             }, true);
@@ -358,12 +439,14 @@
             const values = Object.fromEntries(new FormData(editorForm));
             if (values.href && !validUrl(values.href)) { document.querySelector('#element-editor-error').textContent = 'Wpisz poprawny adres http(s), mailto lub tel.'; return; }
             if (values.src && !validUrl(values.src, true)) { document.querySelector('#element-editor-error').textContent = 'Obrazek musi mieć adres http(s).'; return; }
+            if (values.backgroundImage && !validUrl(values.backgroundImage, true)) { document.querySelector('#element-editor-error').textContent = 'Grafika tła musi mieć adres http(s).'; return; }
 
             const pageEdits = getPageEdits(pageSelect.value);
             if (selectedElements.textPath) {
                 pageEdits[selectedElements.textPath] ??= {};
                 pageEdits[selectedElements.textPath].text = values.text;
-                selectedElements.text.textContent = values.text;
+                pageEdits[selectedElements.textPath].textNodeIndex = selectedElements.textNodeIndex;
+                selectedElements.text.nodeValue = values.text;
             }
             if (selectedElements.linkPath) {
                 pageEdits[selectedElements.linkPath] ??= {};
@@ -375,6 +458,19 @@
                 pageEdits[selectedElements.imagePath] ??= {};
                 pageEdits[selectedElements.imagePath].src = values.src;
                 selectedElements.image.setAttribute('src', values.src);
+                pageEdits[selectedElements.imagePath].alt = values.alt;
+                selectedElements.image.setAttribute('alt', values.alt);
+            }
+            const targetEdit = pageEdits[selectedElements.targetPath] ??= {};
+            targetEdit.title = values.title;
+            targetEdit.ariaLabel = values.ariaLabel;
+            if (values.backgroundImage) targetEdit.backgroundImage = values.backgroundImage;
+            selectedElements.target.setAttribute('title', values.title);
+            selectedElements.target.setAttribute('aria-label', values.ariaLabel);
+            if (values.backgroundImage) selectedElements.target.style.backgroundImage = `url("${values.backgroundImage.replace(/["\\]/g, '')}")`;
+            if (selectedElements.input) {
+                targetEdit.placeholder = values.placeholder;
+                selectedElements.input.setAttribute('placeholder', values.placeholder);
             }
             selectedElements = null;
             editorDialog.close();
@@ -388,7 +484,7 @@
             const { error } = await saveSiteContent('site_editor_document', JSON.stringify(editorDocument));
             editorStatus.textContent = error
                 ? 'Nie udało się zapisać zmian. Sprawdź połączenie i uprawnienia konta.'
-                : 'Zapisano. Publikacja na stronie przez GitHub Actions może potrwać do 5 minut.';
+                : 'Zapisano. Zmiany są dostępne na stronie po jej odświeżeniu.';
         });
     </script>
 </body>

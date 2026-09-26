@@ -80,6 +80,22 @@ export async function saveSiteContent(key, value) {
     return supabase.from('site_content').upsert({ key, value }, { onConflict: 'key' });
 }
 
+export async function getSiteAvailability() {
+    const { data, error } = await supabase
+        .from('site_content')
+        .select('value')
+        .eq('key', 'site_availability')
+        .maybeSingle();
+    return { data: data?.value ?? 'live', error };
+}
+
+export async function saveSiteAvailability(mode) {
+    if (!['live', 'disabled', 'maintenance'].includes(mode)) {
+        return { error: new Error('Wybierz prawidłowy tryb strony.') };
+    }
+    return saveSiteContent('site_availability', mode);
+}
+
 export async function signOut() {
     return supabase.auth.signOut();
 }

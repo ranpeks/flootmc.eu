@@ -18,6 +18,15 @@ try {
         }
     }
     let editorDocument = content.site_editor_document ?? {};
+    // Visual edits are saved to Supabase so they are applied on every page.
+    try {
+        const { getSiteContent } = await import('./auth.js?v=credentials-minimums');
+        const { data: rows } = await getSiteContent();
+        const savedDocument = rows?.find((row) => row.key === 'site_editor_document')?.value;
+        if (savedDocument) editorDocument = savedDocument;
+    } catch (error) {
+        console.warn('FlootMC saved page edits could not be loaded:', error);
+    }
     if (typeof editorDocument === 'string') {
         try { editorDocument = JSON.parse(editorDocument); }
         catch { editorDocument = {}; }
@@ -36,12 +45,24 @@ try {
         let node = document.body;
         for (const index of indices) node = node?.childNodes[index];
         if (!(node instanceof Element)) continue;
-        if (typeof edit.text === 'string' && node.childElementCount === 0) node.textContent = edit.text;
+        if (typeof edit.text === 'string') {
+            if (Number.isInteger(edit.textNodeIndex)) {
+                const textNode = node.childNodes[edit.textNodeIndex];
+                if (textNode?.nodeType === Node.TEXT_NODE) textNode.nodeValue = edit.text;
+            } else if (node.childElementCount === 0) node.textContent = edit.text;
+        }
         if (typeof edit.href === 'string' && isSafeUrl(edit.href)) {
             if (node.matches('a')) node.setAttribute('href', edit.href);
             else if (node.hasAttribute('data-shop-url')) node.dataset.shopUrl = edit.href;
         }
         if (typeof edit.src === 'string' && node.matches('img') && isSafeUrl(edit.src, true)) node.setAttribute('src', edit.src);
+        if (typeof edit.alt === 'string' && node.matches('img')) node.setAttribute('alt', edit.alt);
+        if (typeof edit.title === 'string') node.setAttribute('title', edit.title);
+        if (typeof edit.ariaLabel === 'string') node.setAttribute('aria-label', edit.ariaLabel);
+        if (typeof edit.placeholder === 'string' && node.matches('input,textarea')) node.setAttribute('placeholder', edit.placeholder);
+        if (typeof edit.backgroundImage === 'string' && isSafeUrl(edit.backgroundImage, true)) {
+            node.style.backgroundImage = `url("${edit.backgroundImage.replace(/["\\]/g, '')}")`;
+        }
     }
     window.siteContent = content;
 } catch (error) {

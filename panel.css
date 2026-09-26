@@ -71,6 +71,8 @@
 .profile-settings-intro p { margin-top: 5px; color: #bdb5d1; }
 .profile-settings-card label,.element-editor-dialog label { display: grid; gap: 7px; margin-top: 16px; color: #f6f0ff; font-size: .93rem; font-weight: 800; }
 .profile-settings-card input { width: 100%; min-height: 47px; padding: 10px 13px; border: 1px solid rgba(255,255,255,.16); border-radius: 9px; color: #fff; background: rgba(255,255,255,.07); font: inherit; }
+.website-settings-card select { width: 100%; max-width: 470px; min-height: 47px; margin-top: 7px; padding: 10px 13px; border: 1px solid rgba(255,255,255,.16); border-radius: 9px; color: #fff; background: #171328; font: inherit; }
+.website-settings-card .editor-save { width: min(100%, 470px); }
 .profile-settings-card form { max-width: 470px; }
 .profile-settings-card .editor-save { width: 100%; margin-top: 7px; }
 

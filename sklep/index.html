@@ -2,12 +2,20 @@
 <html lang="pl">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="refresh" content="0;url=https://vishop.pl/shop/25770">
-  <title>Przekierowanie...</title>
-  <script>window.location.href = 'https://vishop.pl/shop/25770';</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>document.documentElement.dataset.siteAccess='checking'</script>
+  <style>html[data-site-access="checking"] body{visibility:hidden}</style>
+  <script type="module" src="../maintenance-gate.js?v=site-mode-1"></script>
+  <title>Sklep — FlootMC</title>
 </head>
 <body>
-  Jeśli nie nastąpi automatyczne przekierowanie, <a href="https://vishop.pl/shop/25770">kliknij tutaj</a>.
-    <script type="module" src="../site-content.js?v=63cca3e"></script>
+  <main><h1>Sklep FlootMC</h1><p>Przejdź do naszego sklepu, aby zobaczyć ofertę.</p><a data-shop-url="https://vishop.pl/shop/25770" href="https://vishop.pl/shop/25770">Otwórz sklep</a></main>
+    <script type="module" src="../site-content.js?v=visual-editor-2"></script>
+    <script type="module">
+      await import('../site-content.js?v=visual-editor-2');
+      if (!new URLSearchParams(location.search).has('editorPreview')) {
+        location.replace(document.querySelector('[data-shop-url]').href);
+      }
+    </script>
 </body>
 </html>
