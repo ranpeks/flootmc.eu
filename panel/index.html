@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
         <script>document.documentElement.dataset.siteAccess='checking'</script>
     <style>html[data-site-access="checking"] body{visibility:hidden}</style>
-    <script type="module" src="/maintenance-gate.js?v=site-mode-1"></script>
+    <script type="module" src="/maintenance-gate.js?v=site-mode-2"></script>
 <meta name="theme-color" content="#090712">
     <script type="module" src="../site-content.js?v=visual-editor-2"></script>
     <title>Panel administratora — FlootMC</title>
@@ -104,6 +104,20 @@
                     <option value="disabled">Strona wyłączona</option>
                     <option value="maintenance">Przerwa konserwacyjna</option>
                 </select>
+                <div class="maintenance-schedule" id="maintenance-schedule" hidden>
+                    <p>Planowany termin zakończenia prac</p>
+                    <div class="maintenance-schedule-fields">
+                        <label for="maintenance-day">Dzień<input id="maintenance-day" type="number" min="1" max="31" inputmode="numeric" placeholder="np. 30"></label>
+                        <label for="maintenance-month">Miesiąc<select id="maintenance-month">
+                            <option value="1">Styczeń</option><option value="2">Luty</option><option value="3">Marzec</option><option value="4">Kwiecień</option>
+                            <option value="5">Maj</option><option value="6">Czerwiec</option><option value="7">Lipiec</option><option value="8">Sierpień</option>
+                            <option value="9">Wrzesień</option><option value="10">Październik</option><option value="11">Listopad</option><option value="12">Grudzień</option>
+                        </select></label>
+                        <label for="maintenance-year">Rok (opcjonalnie)<input id="maintenance-year" type="number" min="2026" max="2100" inputmode="numeric" placeholder="Bieżący rok"></label>
+                        <label for="maintenance-time">Godzina<input id="maintenance-time" type="time" value="18:00" required></label>
+                    </div>
+                    <small>Jeśli zostawisz rok pusty, użyjemy bieżącego: <span id="maintenance-current-year"></span>.</small>
+                </div>
                 <p class="editor-status" id="site-availability-status" aria-live="polite"></p>
                 <button class="editor-save" id="save-site-availability" type="button">Zapisz ustawienie</button>
             </div>
@@ -236,16 +250,45 @@
 
         const availabilitySelect = document.querySelector('#site-availability-select');
         const availabilityStatus = document.querySelector('#site-availability-status');
+        const schedule = document.querySelector('#maintenance-schedule');
+        const maintenanceDay = document.querySelector('#maintenance-day');
+        const maintenanceMonth = document.querySelector('#maintenance-month');
+        const maintenanceYear = document.querySelector('#maintenance-year');
+        const maintenanceTime = document.querySelector('#maintenance-time');
+        document.querySelector('#maintenance-current-year').textContent = String(new Date().getFullYear());
+        const setScheduleVisibility = () => { schedule.hidden = availabilitySelect.value !== 'maintenance'; };
+        availabilitySelect.addEventListener('change', setScheduleVisibility);
         document.querySelector('[data-open-view="website-view"]').addEventListener('click', async () => {
             availabilityStatus.textContent = 'Wczytywanie ustawień…';
             const { data, error } = await getSiteAvailability();
             if (error) { availabilityStatus.textContent = 'Nie udało się wczytać trybu strony.'; return; }
-            availabilitySelect.value = ['live', 'disabled', 'maintenance'].includes(data) ? data : 'live';
+            availabilitySelect.value = ['live', 'disabled', 'maintenance'].includes(data.mode) ? data.mode : 'live';
+            if (data.endsAt) {
+                const finish = new Date(data.endsAt);
+                maintenanceDay.value = String(finish.getDate());
+                maintenanceMonth.value = String(finish.getMonth() + 1);
+                maintenanceYear.value = finish.getFullYear() === new Date().getFullYear() ? '' : String(finish.getFullYear());
+                maintenanceTime.value = `${String(finish.getHours()).padStart(2, '0')}:${String(finish.getMinutes()).padStart(2, '0')}`;
+            }
+            setScheduleVisibility();
             availabilityStatus.textContent = 'Aktualny tryb: ' + availabilitySelect.selectedOptions[0].textContent + '.';
         });
         document.querySelector('#save-site-availability').addEventListener('click', async () => {
             availabilityStatus.textContent = 'Zapisywanie…';
-            const { error } = await saveSiteAvailability(availabilitySelect.value);
+            let endsAt = null;
+            if (availabilitySelect.value === 'maintenance') {
+                const day = Number(maintenanceDay.value);
+                const month = Number(maintenanceMonth.value);
+                const year = Number(maintenanceYear.value || new Date().getFullYear());
+                const [hours, minutes] = maintenanceTime.value.split(':').map(Number);
+                const localFinish = new Date(year, month - 1, day, hours, minutes, 0, 0);
+                if (!maintenanceDay.value || !maintenanceTime.value || localFinish.getFullYear() !== year || localFinish.getMonth() !== month - 1 || localFinish.getDate() !== day) {
+                    availabilityStatus.textContent = 'Wpisz poprawny dzień, miesiąc i godzinę zakończenia.';
+                    return;
+                }
+                endsAt = localFinish.toISOString();
+            }
+            const { error } = await saveSiteAvailability(availabilitySelect.value, endsAt);
             availabilityStatus.textContent = error ? 'Nie udało się zapisać ustawienia. Sprawdź połączenie i uprawnienia.' : 'Zapisano tryb strony.';
         });
 

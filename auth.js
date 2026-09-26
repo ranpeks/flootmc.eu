@@ -86,14 +86,22 @@ export async function getSiteAvailability() {
         .select('value')
         .eq('key', 'site_availability')
         .maybeSingle();
-    return { data: data?.value ?? 'live', error };
+    let settings = data?.value ?? 'live';
+    if (typeof settings === 'string' && settings.startsWith('{')) {
+        try { settings = JSON.parse(settings); } catch { settings = 'live'; }
+    }
+    if (typeof settings === 'string') settings = { mode: settings, endsAt: null };
+    return { data: { mode: settings?.mode ?? 'live', endsAt: settings?.endsAt ?? null }, error };
 }
 
-export async function saveSiteAvailability(mode) {
+export async function saveSiteAvailability(mode, endsAt = null) {
     if (!['live', 'disabled', 'maintenance'].includes(mode)) {
         return { error: new Error('Wybierz prawidłowy tryb strony.') };
     }
-    return saveSiteContent('site_availability', mode);
+    if (mode === 'maintenance' && (!endsAt || !Number.isFinite(Date.parse(endsAt)) || Date.parse(endsAt) <= Date.now())) {
+        return { error: new Error('Podaj przyszłą datę i godzinę zakończenia prac.') };
+    }
+    return saveSiteContent('site_availability', JSON.stringify({ mode, endsAt: mode === 'maintenance' ? endsAt : null }));
 }
 
 export async function signOut() {

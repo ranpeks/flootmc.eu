@@ -73,6 +73,12 @@
 .profile-settings-card input { width: 100%; min-height: 47px; padding: 10px 13px; border: 1px solid rgba(255,255,255,.16); border-radius: 9px; color: #fff; background: rgba(255,255,255,.07); font: inherit; }
 .website-settings-card select { width: 100%; max-width: 470px; min-height: 47px; margin-top: 7px; padding: 10px 13px; border: 1px solid rgba(255,255,255,.16); border-radius: 9px; color: #fff; background: #171328; font: inherit; }
 .website-settings-card .editor-save { width: min(100%, 470px); }
+.maintenance-schedule { max-width: 720px; margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.12); }
+.maintenance-schedule > p { color: #f6f0ff; font-weight: 800; }
+.maintenance-schedule-fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.maintenance-schedule-fields label { display: grid; gap: 7px; color: #f6f0ff; font-size: .9rem; font-weight: 800; }
+.maintenance-schedule-fields input,.maintenance-schedule-fields select { width: 100%; min-height: 45px; padding: 9px 11px; border: 1px solid rgba(255,255,255,.16); border-radius: 9px; color: #fff; background: #171328; font: inherit; }
+.maintenance-schedule small { display: block; margin-top: 10px; color: #bdb5d1; }
 .profile-settings-card form { max-width: 470px; }
 .profile-settings-card .editor-save { width: 100%; margin-top: 7px; }
 
@@ -121,4 +127,5 @@
     .user-card-actions { grid-column: auto; }
     .user-card-actions button { width: 100%; }
     .user-card-status { grid-column: auto; }
+    .maintenance-schedule-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
