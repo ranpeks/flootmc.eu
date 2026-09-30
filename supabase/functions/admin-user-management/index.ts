@@ -12,7 +12,7 @@ const allowedAdminEmails = new Set([
 ]);
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://flootmc.eu",
+  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Vary": "Origin",
@@ -34,6 +34,36 @@ async function listAllUsers(adminClient: ReturnType<typeof createClient>) {
     if (data.users.length < 1000) break;
   }
   return users;
+}
+
+function validateShopProduct(input: unknown) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return null;
+  const value = input as Record<string, unknown>;
+  const name = typeof value.name === "string" ? value.name.trim() : "";
+  const slug = typeof value.slug === "string" ? value.slug.trim().toLowerCase() : "";
+  const description = typeof value.description === "string" ? value.description.trim() : "";
+  const imageUrl = typeof value.image_url === "string" ? value.image_url.trim() : "";
+  const price = Number(value.price);
+  const sortOrder = Number(value.sort_order);
+  const deliveryCommands = value.delivery_commands;
+  if (!name || name.length > 100 || !/^[a-z0-9][a-z0-9-]{1,63}$/.test(slug)) return null;
+  if (description.length > 1000 || !Number.isFinite(price) || price <= 0 || price > 100000) return null;
+  if (!Number.isInteger(sortOrder) || sortOrder < 0 || sortOrder > 1000000) return null;
+  if (imageUrl && (!/^https:\/\//i.test(imageUrl) || imageUrl.length > 2048)) return null;
+  if (value.delivery_type !== "command" || !Array.isArray(deliveryCommands) || deliveryCommands.length < 1 || deliveryCommands.length > 20) return null;
+  if (deliveryCommands.some((command) => typeof command !== "string" || !command.trim() || command.length > 500 || /[\r\n\0]/.test(command))) return null;
+  return {
+    name,
+    slug,
+    description,
+    image_url: imageUrl || null,
+    price: Number(price.toFixed(2)),
+    currency: "PLN",
+    active: value.active !== false,
+    sort_order: sortOrder,
+    delivery_type: "command",
+    delivery_commands: deliveryCommands.map((command) => command.trim()),
+  };
 }
 
 Deno.serve(async (req: Request) => {
@@ -91,6 +121,37 @@ Deno.serve(async (req: Request) => {
   const { data: { user: caller }, error: callerError } = await publicClient.auth.getUser(token);
   if (callerError || !caller?.email || !allowedAdminEmails.has(caller.email.toLowerCase())) {
     return json({ error: "Brak uprawnień administratora." }, 403);
+  }
+
+  if (body.action === "shop-list-products") {
+    const { data, error } = await adminClient.from("shop_products").select("*").order("sort_order", { ascending: true });
+    if (error) return json({ error: "Nie udało się pobrać produktów sklepu." }, 502);
+    return json({ products: data ?? [] });
+  }
+
+  if (body.action === "shop-save-product") {
+    const product = validateShopProduct(body.product);
+    if (!product) return json({ error: "Sprawdź nazwę, adres, cenę, kolejność i komendy produktu." }, 400);
+    let result: { data: unknown; error: { code?: string } | null };
+    if (body.productId !== undefined && body.productId !== null && body.productId !== "") {
+      const id = Number(body.productId);
+      if (!Number.isSafeInteger(id) || id < 1) return json({ error: "Nieprawidłowy identyfikator produktu." }, 400);
+      result = await adminClient.from("shop_products").update(product).eq("id", id).select("*").single();
+    } else {
+      result = await adminClient.from("shop_products").insert(product).select("*").single();
+    }
+    if (result.error) return json({ error: result.error.code === "23505" ? "Taki adres produktu już istnieje." : "Nie udało się zapisać produktu." }, 400);
+    return json({ product: result.data });
+  }
+
+  if (body.action === "shop-delete-product") {
+    const id = Number(body.productId);
+    if (!Number.isSafeInteger(id) || id < 1) return json({ error: "Nieprawidłowy identyfikator produktu." }, 400);
+    // Keep order history and foreign-key references intact by hiding the product.
+    const { data, error } = await adminClient.from("shop_products").update({ active: false }).eq("id", id).select("id").maybeSingle();
+    if (error) return json({ error: "Nie udało się ukryć produktu." }, 400);
+    if (!data) return json({ error: "Nie znaleziono produktu." }, 404);
+    return json({ deleted: true });
   }
 
   if (body.action === "list-users") {

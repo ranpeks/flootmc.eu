@@ -49,6 +49,11 @@
                     <span class="admin-tile-copy"><strong>WWW</strong><small>Włącz stronę, wyłącz ją lub ustaw przerwę konserwacyjną.</small></span>
                     <span class="admin-tile-arrow" aria-hidden="true">↗</span>
                 </button>
+                <button class="admin-tile" type="button" data-open-view="shop-view">
+                    <span class="admin-tile-icon" aria-hidden="true">🛒</span>
+                    <span class="admin-tile-copy"><strong>Sklep</strong><small>Dodawaj, edytuj i ukrywaj produkty oferty.</small></span>
+                    <span class="admin-tile-arrow" aria-hidden="true">↗</span>
+                </button>
                 <a class="admin-tile" href="/forum/" target="_blank" rel="noopener">
                     <span class="admin-tile-icon" aria-hidden="true">☷</span>
                     <span class="admin-tile-copy"><strong>Sprawdź forum</strong><small>Otwórz aktualną sekcję forum FlootMC.</small></span>
@@ -147,6 +152,35 @@
             <div class="users-toolbar"><p class="editor-instructions">Zmiana adresu email może wymagać potwierdzenia przez użytkownika. Nowe hasło ustawiaj tylko na jego prośbę.</p><button class="editor-save" id="refresh-users" type="button">Odśwież listę</button></div>
             <p class="editor-status" id="users-status" aria-live="polite"></p>
             <div class="users-list" id="users-list" aria-live="polite"></div>
+        </section>
+
+        <section id="shop-view" class="admin-view admin-subview" hidden>
+            <div class="admin-subview-heading">
+                <button class="admin-back" type="button" data-back>← Panel główny</button>
+                <div><span class="admin-eyebrow">OFERTA SERWERA</span><h1>Produkty sklepu</h1></div>
+            </div>
+            <div class="users-toolbar">
+                <p class="editor-instructions">Produkty zapisują się w Supabase. Ukrycie produktu nie usuwa historii zamówień.</p>
+                <div class="shop-toolbar-actions"><button class="admin-back" id="refresh-shop-products" type="button">Odśwież</button><button class="editor-save" id="new-shop-product" type="button">+ Dodaj produkt</button></div>
+            </div>
+            <p class="editor-status" id="shop-products-status" aria-live="polite"></p>
+            <form class="shop-product-form" id="shop-product-form" hidden>
+                <div class="shop-form-heading"><h2 id="shop-form-title">Nowy produkt</h2><button class="admin-back" id="cancel-shop-product" type="button">Anuluj</button></div>
+                <input name="productId" type="hidden">
+                <div class="shop-form-grid">
+                    <label>Nazwa produktu<input name="name" maxlength="100" required placeholder="np. VIP"></label>
+                    <label>Adres produktu (slug)<input name="slug" maxlength="64" pattern="[a-z0-9][a-z0-9-]{1,63}" required placeholder="vip-plus"></label>
+                    <label>Cena (PLN)<input name="price" type="number" min="0.01" max="100000" step="0.01" required></label>
+                    <label>Kolejność wyświetlania<input name="sort_order" type="number" min="0" max="1000000" step="1" value="10" required></label>
+                    <label class="shop-form-wide">Opis<textarea name="description" maxlength="1000" rows="3" placeholder="Co otrzymuje gracz?"></textarea></label>
+                    <label class="shop-form-wide">Obraz produktu (adres HTTPS)<input name="image_url" type="url" placeholder="https://…"></label>
+                    <label class="shop-form-wide">Komendy dostawy — jedna w wierszu<textarea name="delivery_commands" rows="4" required placeholder="lp user {player} parent add vip"></textarea><small>Dozwolone znaczniki: {player}, {quantity}. Komendy wykonuje plugin na serwerze.</small></label>
+                    <label class="shop-active-toggle"><input name="active" type="checkbox" checked> Produkt widoczny w sklepie</label>
+                </div>
+                <p class="user-card-status" id="shop-product-form-status" aria-live="polite"></p>
+                <button class="editor-save" type="submit">Zapisz produkt</button>
+            </form>
+            <div class="shop-products-list" id="shop-products-list" aria-live="polite"></div>
         </section>
     </main>
 
@@ -247,6 +281,120 @@
         };
         document.querySelector('#refresh-users').addEventListener('click', refreshUsers);
         document.querySelector('[data-open-view="users-view"]').addEventListener('click', () => { if (!usersList.childElementCount) refreshUsers(); });
+
+        const shopProductsList = document.querySelector('#shop-products-list');
+        const shopProductsStatus = document.querySelector('#shop-products-status');
+        const shopProductForm = document.querySelector('#shop-product-form');
+        const shopProductFormStatus = document.querySelector('#shop-product-form-status');
+        const refreshShopProducts = async () => {
+            shopProductsStatus.textContent = 'Pobieranie produktów…';
+            shopProductsList.replaceChildren();
+            const { data, error } = await manageUsers('shop-list-products');
+            if (error) { shopProductsStatus.textContent = error.message; return; }
+            const products = data?.products ?? [];
+            shopProductsStatus.textContent = `Liczba produktów: ${products.length}`;
+            if (!products.length) {
+                const empty = document.createElement('p');
+                empty.className = 'editor-instructions';
+                empty.textContent = 'Nie ma jeszcze produktów. Dodaj pierwszy produkt przyciskiem powyżej.';
+                shopProductsList.append(empty);
+            }
+            for (const product of products) {
+                const card = document.createElement('article');
+                card.className = 'shop-admin-product';
+                const copy = document.createElement('div');
+                copy.className = 'shop-admin-product-copy';
+                const title = document.createElement('h2');
+                title.textContent = product.name;
+                const meta = document.createElement('p');
+                meta.textContent = `${product.slug} · ${new Intl.NumberFormat('pl-PL', { style: 'currency', currency: 'PLN' }).format(Number(product.price))} · ${product.active ? 'Widoczny' : 'Ukryty'}`;
+                const description = document.createElement('p');
+                description.textContent = product.description || 'Brak opisu';
+                copy.append(title, meta, description);
+                const actions = document.createElement('div');
+                actions.className = 'shop-admin-product-actions';
+                const edit = document.createElement('button');
+                edit.className = 'admin-back';
+                edit.type = 'button';
+                edit.textContent = 'Edytuj';
+                edit.addEventListener('click', () => editShopProduct(product));
+                actions.append(edit);
+                if (product.active) {
+                    const hide = document.createElement('button');
+                    hide.className = 'shop-delete-button';
+                    hide.type = 'button';
+                    hide.textContent = 'Usuń z oferty';
+                    hide.addEventListener('click', async () => {
+                        if (!window.confirm(`Ukryć produkt „${product.name}” w sklepie? Historia dotychczasowych zamówień zostanie zachowana.`)) return;
+                        hide.disabled = true;
+                        const { error: deleteError } = await manageUsers('shop-delete-product', { productId: product.id });
+                        shopProductsStatus.textContent = deleteError ? deleteError.message : 'Produkt został ukryty. Historia zamówień jest zachowana.';
+                        await refreshShopProducts();
+                    });
+                    actions.append(hide);
+                }
+                card.append(copy, actions);
+                shopProductsList.append(card);
+            }
+        };
+        const resetShopProductForm = () => {
+            shopProductForm.reset();
+            shopProductForm.elements.productId.value = '';
+            shopProductForm.elements.active.checked = true;
+            shopProductForm.elements.sort_order.value = '10';
+            shopProductForm.hidden = true;
+            shopProductFormStatus.textContent = '';
+        };
+        const editShopProduct = (product) => {
+            shopProductForm.reset();
+            shopProductForm.elements.productId.value = String(product.id);
+            shopProductForm.elements.name.value = product.name ?? '';
+            shopProductForm.elements.slug.value = product.slug ?? '';
+            shopProductForm.elements.price.value = String(product.price ?? '');
+            shopProductForm.elements.sort_order.value = String(product.sort_order ?? 0);
+            shopProductForm.elements.description.value = product.description ?? '';
+            shopProductForm.elements.image_url.value = product.image_url ?? '';
+            shopProductForm.elements.delivery_commands.value = Array.isArray(product.delivery_commands) ? product.delivery_commands.join('\n') : '';
+            shopProductForm.elements.active.checked = product.active === true;
+            document.querySelector('#shop-form-title').textContent = `Edytuj: ${product.name}`;
+            shopProductForm.hidden = false;
+            shopProductForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+        document.querySelector('#refresh-shop-products').addEventListener('click', refreshShopProducts);
+        document.querySelector('[data-open-view="shop-view"]').addEventListener('click', refreshShopProducts);
+        document.querySelector('#new-shop-product').addEventListener('click', () => {
+            resetShopProductForm();
+            document.querySelector('#shop-form-title').textContent = 'Nowy produkt';
+            shopProductForm.hidden = false;
+            shopProductForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        document.querySelector('#cancel-shop-product').addEventListener('click', resetShopProductForm);
+        shopProductForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const fields = shopProductForm.elements;
+            const product = {
+                name: fields.name.value.trim(),
+                slug: fields.slug.value.trim().toLowerCase(),
+                description: fields.description.value.trim(),
+                image_url: fields.image_url.value.trim(),
+                price: Number(fields.price.value),
+                currency: 'PLN',
+                active: fields.active.checked,
+                sort_order: Number(fields.sort_order.value),
+                delivery_type: 'command',
+                delivery_commands: fields.delivery_commands.value.split('\n').map((line) => line.trim()).filter(Boolean)
+            };
+            shopProductFormStatus.textContent = 'Zapisywanie produktu…';
+            const { error } = await manageUsers('shop-save-product', {
+                productId: fields.productId.value || undefined,
+                product
+            });
+            shopProductFormStatus.textContent = error ? error.message : 'Produkt został zapisany.';
+            if (!error) {
+                resetShopProductForm();
+                await refreshShopProducts();
+            }
+        });
 
         const availabilitySelect = document.querySelector('#site-availability-select');
         const availabilityStatus = document.querySelector('#site-availability-status');

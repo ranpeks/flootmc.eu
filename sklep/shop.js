@@ -24,13 +24,11 @@ loadProducts();
 
 async function loadProducts() {
   try {
-    let { response, data } = await requestProducts('is_active');
-    // Support schemas that name the activation flag `active` instead.
-    if (!response.ok && response.status === 400) ({ response, data } = await requestProducts('active'));
+    const { response, data } = await requestProducts();
     if (!response.ok) throw new Error(readError(data, 'Nie udało się pobrać oferty.'));
     if (!Array.isArray(data)) throw new Error('Otrzymaliśmy nieprawidłowe dane oferty.');
 
-    products = data.filter(isActive).sort((a, b) => number(a.sort_order) - number(b.sort_order));
+    products = data.filter((product) => product.active === true).sort((a, b) => number(a.sort_order) - number(b.sort_order));
     if (!products.length) {
       catalogMessage.textContent = 'Oferta jest teraz aktualizowana. Wróć za chwilę.';
       return;
@@ -44,18 +42,14 @@ async function loadProducts() {
   }
 }
 
-async function requestProducts(activeColumn) {
-  const url = `${SUPABASE_URL}/rest/v1/shop_products?select=*&${activeColumn}=eq.true&order=sort_order.asc`;
+async function requestProducts() {
+  const url = `${SUPABASE_URL}/rest/v1/shop_products?select=id,slug,name,description,image_url,price,currency,active,sort_order&active=eq.true&order=sort_order.asc`;
   const response = await fetch(url, {
     headers: { apikey: SUPABASE_PUBLISHABLE_KEY, Accept: 'application/json' },
     cache: 'no-store'
   });
   const data = await response.json().catch(() => null);
   return { response, data };
-}
-
-function isActive(product) {
-  return product.is_active === true || product.active === true;
 }
 
 function renderProduct(product, index) {
@@ -194,8 +188,8 @@ async function checkout() {
         apikey: SUPABASE_PUBLISHABLE_KEY
       },
       body: JSON.stringify({
-        player_name: nick,
-        items: [...cart].map(([product_id, entry]) => ({ product_id, quantity: entry.quantity }))
+        nick,
+        items: [...cart.values()].map((entry) => ({ product_id: entry.product.id, quantity: entry.quantity }))
       })
     });
     const data = await response.json().catch(() => null);

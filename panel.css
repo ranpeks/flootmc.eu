@@ -105,6 +105,28 @@
 .user-card-actions { display: flex; flex-wrap: wrap; grid-column: 1 / -1; gap: 10px; margin-top: 4px; }
 .user-card-status { grid-column: 1 / -1; min-height: 20px; color: #cfc5df; font-size: .9rem; }
 .user-card-actions button:disabled { opacity: .6; cursor: wait; }
+.shop-toolbar-actions,.shop-admin-product-actions { display: flex; flex-wrap: wrap; gap: 9px; }
+.shop-product-form { margin: 18px 0; padding: clamp(18px, 3vw, 28px); border: 1px solid rgba(224,41,255,.28); border-radius: 18px; background: rgba(16,13,31,.92); }
+.shop-product-form[hidden] { display: none !important; }
+.shop-form-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 8px; }
+.shop-form-heading h2 { margin: 0; font-size: 1.2rem; }
+.shop-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 13px; }
+.shop-form-grid label { display: grid; gap: 7px; color: #eee8fa; font-size: .89rem; font-weight: 800; }
+.shop-form-grid input:not([type="checkbox"]),.shop-form-grid textarea { width: 100%; min-height: 43px; padding: 9px 12px; border: 1px solid rgba(255,255,255,.16); border-radius: 9px; color: #fff; background: rgba(255,255,255,.07); font: inherit; }
+.shop-form-grid textarea { min-height: 80px; resize: vertical; }
+.shop-form-grid small { color: #bdb5d1; font-size: .78rem; font-weight: 500; line-height: 1.5; }
+.shop-form-wide { grid-column: 1 / -1; }
+.shop-active-toggle { display: flex !important; align-items: center; gap: 9px !important; }
+.shop-active-toggle input { width: 18px; height: 18px; accent-color: #df39f5; }
+.shop-product-form > .editor-save { min-width: 180px; margin-top: 10px; }
+.shop-products-list { display: grid; gap: 13px; }
+.shop-admin-product { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: clamp(18px, 3vw, 24px); border: 1px solid rgba(255,255,255,.12); border-radius: 17px; background: linear-gradient(140deg,rgba(25,20,46,.88),rgba(13,10,26,.92)); }
+.shop-admin-product-copy { min-width: 0; }
+.shop-admin-product-copy h2 { margin: 0 0 6px; font-size: 1.1rem; }
+.shop-admin-product-copy p { margin: 4px 0 0; color: #bdb5d1; font-size: .88rem; overflow-wrap: anywhere; }
+.shop-delete-button { min-height: 42px; padding: 8px 14px; border: 1px solid rgba(255,113,147,.25); border-radius: 999px; color: #ffb3c1; background: rgba(140,34,65,.13); cursor: pointer; font: inherit; font-weight: 800; }
+.shop-delete-button:hover { background: rgba(140,34,65,.28); }
+.shop-delete-button:disabled { opacity: .6; cursor: wait; }
 
 @media (max-width: 720px) {
     .admin-topbar { min-height: 68px; padding: 9px 14px; }
@@ -127,5 +149,10 @@
     .user-card-actions { grid-column: auto; }
     .user-card-actions button { width: 100%; }
     .user-card-status { grid-column: auto; }
+    .shop-toolbar-actions,.shop-admin-product-actions { width: 100%; flex-direction: column; }
+    .shop-toolbar-actions button,.shop-admin-product-actions button { width: 100%; }
+    .shop-form-grid { grid-template-columns: 1fr; }
+    .shop-form-wide { grid-column: auto; }
+    .shop-admin-product { align-items: stretch; flex-direction: column; }
     .maintenance-schedule-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
