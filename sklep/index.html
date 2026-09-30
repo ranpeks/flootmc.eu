@@ -1,21 +1,58 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090712">
+  <meta name="description" content="Oficjalny sklep serwera Minecraft FlootMC. Wybierz produkt i dołącz do gry.">
+  <link rel="icon" href="https://i.imgur.com/WM6NQHV.png" type="image/png">
+  <link rel="stylesheet" href="shop.css">
   <script>document.documentElement.dataset.siteAccess='checking'</script>
   <style>html[data-site-access="checking"] body{visibility:hidden}</style>
   <script type="module" src="../maintenance-gate.js?v=site-mode-2"></script>
-  <title>Sklep — FlootMC</title>
+  <script type="module" src="shop.js"></script>
+  <title>Sklep FlootMC — oficjalny sklep serwera</title>
 </head>
 <body>
-  <main><h1>Sklep FlootMC</h1><p>Przejdź do naszego sklepu, aby zobaczyć ofertę.</p><a data-shop-url="https://vishop.pl/shop/25770/server/26579" href="https://vishop.pl/shop/25770/server/26579" target="_blank" rel="noopener noreferrer">Otwórz sklep</a></main>
-    <script type="module" src="../site-content.js?v=visual-editor-2"></script>
-    <script type="module">
-      await import('../site-content.js?v=visual-editor-2');
-      if (!new URLSearchParams(location.search).has('editorPreview')) {
-        location.replace(document.querySelector('[data-shop-url]').href);
-      }
-    </script>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="FlootMC — strona główna">
+      <img src="https://i.imgur.com/WM6NQHV.png" alt="" width="42" height="42">
+      <span>Floot<span class="brand-accent">MC</span><small>OFICJALNY SKLEP</small></span>
+    </a>
+    <a class="home-link" href="/">← <span>Strona główna</span></a>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="eyebrow"><span class="online-dot"></span> SKLEP SERWERA FLOOTMC</div>
+      <h1 id="page-title">Twoja przygoda.<br><span>Twój wybór.</span></h1>
+      <p>Wybierz dodatki do gry i wróć na serwer silniejszy niż wcześniej.</p>
+      <div class="hero-meta"><span>✦ Bezpieczne płatności</span><span>⌁ Dostawa w grze</span><span>◈ Wsparcie serwera</span></div>
+    </section>
+
+    <section class="shop-layout" aria-label="Oferta sklepu">
+      <div class="catalog">
+        <div class="section-heading"><div><span class="section-kicker">OFERTA</span><h2>Wybierz produkt</h2></div><span class="catalog-count" id="product-count"></span></div>
+        <div class="notice" id="catalog-message" role="status" aria-live="polite">Ładowanie oferty…</div>
+        <div class="product-grid" id="product-grid"></div>
+      </div>
+
+      <aside class="checkout-card" aria-labelledby="checkout-title">
+        <div class="checkout-heading"><div class="bag-icon" aria-hidden="true">✦</div><div><span class="section-kicker">TWOJE ZAMÓWIENIE</span><h2 id="checkout-title">Podsumowanie</h2></div></div>
+        <label class="field-label" for="minecraft-nick">Nick Minecraft</label>
+        <div class="nick-input"><span aria-hidden="true">@</span><input id="minecraft-nick" name="minecraft-nick" autocomplete="username" maxlength="16" minlength="3" placeholder="Twój nick z gry" required></div>
+        <p class="field-hint">Wpisz nick dokładnie tak, jak w grze (3–16 znaków).</p>
+        <div class="cart-items" id="cart-items"><p class="empty-cart">Wybierz produkt, aby dodać go do zamówienia.</p></div>
+        <div class="total-row"><span>Razem</span><strong id="cart-total">0,00 zł</strong></div>
+        <button class="pay-button" id="checkout-button" type="button" disabled><span>Przejdź do płatności</span><span aria-hidden="true">↗</span></button>
+        <p class="secure-note">Płatność zostanie obsłużona przez SimPay.</p>
+        <div class="checkout-message" id="checkout-message" role="alert" aria-live="assertive" hidden></div>
+        <p class="terms-note">Zakup oznacza akceptację <a href="/regulamin/">regulaminu serwera</a>.</p>
+      </aside>
+    </section>
+    <footer class="site-footer"><a href="/">← Powrót na FlootMC</a><span>© <span id="year"></span> FlootMC</span></footer>
+  </main>
 </body>
 </html>
