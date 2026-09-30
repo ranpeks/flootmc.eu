@@ -49,7 +49,7 @@ function showGate(mode, endsAt) {
     screen.setAttribute('role', 'status');
     screen.innerHTML = `
         <section class="site-access-card" aria-labelledby="site-access-title">
-            <div class="site-access-brand"><img src="https://i.imgur.com/WM6NQHV.png" alt=""><span>FlootMC</span></div>
+            <div class="site-access-brand"><img src="/assets/flootmc-logo.png" alt=""><span>FlootMC</span></div>
             <p class="site-access-countdown" id="site-access-countdown" hidden></p>
             <h1 id="site-access-title"></h1>
             <p id="site-access-description"></p>
